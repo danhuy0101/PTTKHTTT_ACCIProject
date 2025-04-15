@@ -1,0 +1,164 @@
+<link rel="stylesheet" href="/styles/MH_LapPhieuDuThi.css">
+
+<div class="ticket-container">
+    {{> header showBreadcrumb=true breadcrumbText="Phát hành phiếu dự thi"}}
+    
+    <div class="content-wrapper">
+        <h1 class="page-title">Phát hành phiếu dự thi</h1>
+
+        <div class="search-section">
+            <form action="/tim-kiem-thi-sinh" method="POST" class="search-form" id="searchForm">
+                <div class="search-wrapper">
+                    <input type="text" name="tenThiSinh" placeholder="Nhập mã thí sinh" value="{{searchQuery}}" class="search-input" id="searchInput">
+                    <button type="submit" class="search-button" id="btnTimKiem">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="candidates-table">
+                <thead>
+                    <tr>
+                        <th>Mã thí sinh</th>
+                        <th>Tên thí sinh</th>
+                        <th>Ngày sinh</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th>Gmail</th>
+                        <th>Mã phiếu đăng ký</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each danhSachPhieu}}
+                    <tr class="{{#if (eq this.TRANGTHAI 'Chưa gửi')}}highlight{{/if}}">
+                        <td>{{this.MATHISINH}}</td>
+                        <td>{{this.TENTHISINH}}</td>
+                        <td>{{formatDate this.NGAYSINH}}</td>
+                        <td>{{this.SDT}}</td>
+                        <td>{{this.DIACHI}}</td>
+                        <td>{{this.EMAIL}}</td>
+                        <td>{{this.MAPHIEUDUTHI}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="action-container">
+            <button type="button" id="btnChonTatCa" class="btn-select-all">Chọn tất cả</button>
+            <form action="/cap-nhat-trang-thai" method="POST" id="phatHanhForm">
+                <input type="hidden" name="maPhieuDuThi" id="maPhieuDuThiInput">
+                <button type="button" id="btnPhatHanh" class="phat-hanh-btn">
+                    <i class="fa-solid fa-print"></i> Phát hành
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        class MH_LapPhieuDuThi {
+            constructor() {
+                this.selectedRow = null;
+                this.init();
+            }
+            
+            init() {
+                this.initializeRowSelection();
+                
+                this.initializeButtons();
+                
+                this.MH_LapPhieuDuThi_Load();
+            }
+            
+            initializeRowSelection() {
+                const tableRows = document.querySelectorAll('.candidates-table tbody tr');
+                tableRows.forEach(row => {
+                    row.addEventListener('click', this.handleRowClick.bind(this, row));
+                });
+            }
+            
+            handleRowClick(row) {
+                if (this.selectedRow) {
+                    this.selectedRow.classList.remove('selected');
+                }
+                
+                row.classList.add('selected');
+                this.selectedRow = row;
+                
+                const maphieuduthi = row.cells[6].textContent;
+                document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+                
+                document.getElementById('btnPhatHanh').disabled = false;
+            }
+            
+            initializeButtons() {
+                const phatHanhBtn = document.getElementById('btnPhatHanh');
+                if (phatHanhBtn) {
+                    phatHanhBtn.addEventListener('click', this.btnPhatHanh_Click.bind(this));
+                }
+                
+                const searchBtn = document.getElementById('btnTimKiem');
+                if (searchBtn) {
+                    searchBtn.addEventListener('click', this.btnTimKiem_Click.bind(this));
+                }
+                
+                const selectAllBtn = document.getElementById('btnChonTatCa');
+                if (selectAllBtn) {
+                    selectAllBtn.addEventListener('click', this.btnChonTatCa_Click.bind(this));
+                }
+            }
+            
+            MH_LapPhieuDuThi_Load() {
+                console.log('Exam ticket issuance screen loaded');
+                document.getElementById('btnPhatHanh').disabled = true;
+                document.getElementById('btnPhatHanh').disabled = true;
+            }
+            
+            btnPhatHanh_Click() {
+                if (this.selectedRow) {
+                    if (!this.selectedRow.classList.contains('highlight')) {
+                        alert('Phiếu dự thi này đã được phát hành.');
+                        return;
+                    }
+                    
+                    if (confirm('Bạn có chắc chắn muốn phát hành phiếu dự thi này?')) {
+                        console.log('Issuing ticket...');
+                        document.getElementById('phatHanhForm').submit();
+                    }
+                } else {
+                    alert('Vui lòng chọn một thí sinh.');
+                }
+            }
+            
+            btnChonTatCa_Click() {
+                console.log('Selecting all candidates...');
+                const tableRows = document.querySelectorAll('.candidates-table tbody tr');
+                tableRows.forEach(row => {
+                    if (row.classList.contains('highlight')) {
+                        row.classList.add('selected');
+                        this.selectedRow = row;
+                    }
+                });
+                
+                if (document.querySelectorAll('.candidates-table tbody tr.selected').length > 0) {
+                    document.getElementById('btnPhatHanh').disabled = false;
+                }
+            }
+            
+            btnTimKiem_Click(event) {
+                console.log('Searching for candidates...');
+                const searchInput = document.getElementById('searchInput');
+                if (!searchInput.value.trim()) {
+                    event.preventDefault();
+                    alert('Vui lòng nhập mã thí sinh để tìm kiếm.');
+                }
+            }
+        }
+        
+        const lapPhieuDuThi = new MH_LapPhieuDuThi();
+    });
+</script>

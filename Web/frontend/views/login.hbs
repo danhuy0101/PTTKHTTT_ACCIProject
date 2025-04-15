@@ -1,5 +1,10 @@
 <div class="login-container">
     <h1>Đăng nhập</h1>
+    {{#if error}}
+    <div class="error-message">
+        {{error}}
+    </div>
+    {{/if}}
     <form action="/login" method="POST">
         <div class="form-group">
             <input type="text" name="username" placeholder="Tên đăng nhập" required>

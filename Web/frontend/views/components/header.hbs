@@ -1,8 +1,12 @@
-<header>
-    <h1>Welcome to My Application</h1>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-    </nav>
-</header>
+<div class="header">
+    {{#if showBreadcrumb}}
+    <div class="breadcrumb">
+        <a href="/welcome">Trang chủ</a> {{#if breadcrumbText}}> {{breadcrumbText}}{{/if}}
+    </div>
+    {{/if}}
+    <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></button>
+        <button class="user-profile"><i class="fa-solid fa-user"></i></button>
+        <a href="/logout" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+    </div>
+</div>

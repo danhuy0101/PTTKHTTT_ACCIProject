@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="/styles/MH_TrangChu.css">
+
+<div class="welcome-container">
+    {{> header}}
+    
+    <h1 class="welcome-message">Xin chào, nhân viên phát hành.</h1>
+    
+    <div class="action-buttons">
+        <a href="/phat-hanh-phieu-du-thi" class="action-button" id="phatHanhPhieuDuThi">
+            Phát hành phiếu dự thi
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    class MH_TrangChu {
+        constructor() {
+            this.init();
+        }
+        
+        init() {
+            const phatHanhBtn = document.getElementById('phatHanhPhieuDuThi');
+            if (phatHanhBtn) {
+                phatHanhBtn.addEventListener('click', this.PhatHanhPhieuDuThi_Click.bind(this));
+            }
+            
+            this.MH_TrangChu_Load();
+        }
+        
+        PhatHanhPhieuDuThi_Click(event) {
+            console.log('Redirecting to exam ticket issuance screen');
+        }
+        
+        MH_TrangChu_Load() {
+            console.log('Home screen loaded');
+        }
+    }
+    
+    const trangChu = new MH_TrangChu();
+});
+</script>
