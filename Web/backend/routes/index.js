@@ -237,5 +237,40 @@ router.post('/cap-chung-chi/xac-nhan-trao', isAuthenticated, hasRole("Tiếp nh�
   }
 });
 
+router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
+  const { maPhieu, maKH } = req.query;
+  let danhSach = [];
+  let isSearched = false;
+  let hasResult = false;
+
+  try {
+    if (maPhieu || maKH) {
+      isSearched = true;
+      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, null);
+      hasResult = danhSach.length > 0;
+    }
+
+    res.render('MH_XuLyTraoChungChi_KHDonVi', {
+      layout: 'main',
+      user: req.session.user,
+      danhSach,
+      maPhieu,
+      maKH,
+      isSearched,
+      hasResult
+    });
+  } catch (err) {
+    console.error('❌ Lỗi KH đơn vị:', err);
+    res.render('MH_XuLyTraoChungChi_KHDonVi', {
+      layout: 'main',
+      user: req.session.user,
+      danhSach: [],
+      isSearched: true,
+      hasResult: false,
+      maPhieu,
+      maKH
+    });
+  }
+});
 
 module.exports = router;

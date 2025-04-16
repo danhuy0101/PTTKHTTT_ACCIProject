@@ -1,0 +1,143 @@
+<link rel="stylesheet" href="/styles/MH_XuLyTraoChungChi_KHTuDo.css">
+
+<div class="header-bar">
+  <div class="breadcrumb">
+    <a href="/welcome">Trang chủ</a> &gt;
+    <a href="/xu-ly-cap-chung-chi">Xử lý cấp chứng chỉ</a> &gt;
+    Khách hàng đơn vị
+  </div>
+</div>
+
+<div class="main-content">
+  <h1 class="page-title">Khách hàng đơn vị</h1>
+
+  <form method="get" class="search-form">
+    <div class="form-group">
+      <label for="maPhieu">Mã phiếu đăng ký:</label>
+      <input type="text" id="maPhieu" name="maPhieu" value="{{maPhieu}}">
+    </div>
+    <div class="form-group">
+      <label for="maKH">Mã khách hàng:</label>
+      <input type="text" id="maKH" name="maKH" value="{{maKH}}">
+    </div>
+    <div class="form-submit">
+      <button type="submit" class="search-button">
+        <i class="fa fa-search"></i> Tìm kiếm
+      </button>
+    </div>
+  </form>
+
+  {{#if hasResult}}
+  <div class="result-section">
+    <table>
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAll"></th>
+          <th>Mã chứng chỉ</th>
+          <th>Mã phiếu dự thi</th>
+          <th>Mã phiếu đăng ký</th>
+          <th>Mã khách hàng</th>
+          <th>Tên khách hàng</th>
+          <th>Tên đánh giá</th>
+          <th>Họ tên thí sinh</th>
+          <th>Ngày cấp</th>
+          <th>Kết quả</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each danhSach}}
+        <tr>
+          <td><input type="checkbox" class="row-checkbox" value="{{this.MaChungChi}}"></td>
+          <td>{{this.MaChungChi}}</td>
+          <td>{{this.MaPhieuDuThi}}</td>
+          <td>{{this.MaPhieuDangKy}}</td>
+          <td>{{this.MaKhachHang}}</td>
+          <td>{{this.TenKhachHang}}</td>
+          <td>{{this.TenDanhGia}}</td>
+          <td>{{this.HoTen}}</td>
+          <td>{{this.NgayCap}}</td>
+          <td>{{this.KetQua}}</td>
+          <td>{{this.TrangThai}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <div class="submit-button">
+      <button type="button" class="confirm-button">Xác nhận trao</button>
+    </div>
+  </div>
+  {{/if}}
+
+  <div id="popupModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Thông báo</h3>
+      <p class="text-danger">❌ Không tìm thấy chứng chỉ !</p>
+      <button onclick="closePopup()">Thoát</button>
+    </div>
+  </div>
+
+  <div id="successModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Thành công</h3>
+      <p class="text-success">✅ Đã cấp chứng chỉ thành công!</p>
+      <button onclick="closeSuccessPopup()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const shouldShowPopup = {{#if isSearched}}{{#unless hasResult}}true{{else}}false{{/unless}}{{else}}false{{/if}};
+    if (shouldShowPopup) {
+      document.getElementById("popupModal").style.display = "flex";
+    }
+
+    // Xử lý chọn tất cả
+    const selectAllCheckbox = document.getElementById("selectAll");
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener("change", function () {
+        const checkboxes = document.querySelectorAll(".row-checkbox");
+        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+      });
+    }
+
+    // Xử lý nút xác nhận
+    const confirmBtn = document.querySelector(".confirm-button");
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", async function () {
+        const selected = Array.from(document.querySelectorAll(".row-checkbox:checked"))
+                              .map(cb => cb.value);
+        if (selected.length === 0) {
+          alert("Vui lòng chọn ít nhất một chứng chỉ.");
+          return;
+        }
+
+        try {
+          const res = await fetch("/cap-chung-chi/xac-nhan-trao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ danhSachMaChungChi: selected })
+          });
+          const result = await res.json();
+          if (result.success) {
+            document.getElementById("successModal").style.display = "flex";
+          } else {
+            alert("Lỗi: " + result.message);
+          }
+        } catch (err) {
+          console.error("Lỗi xác nhận trao:", err);
+        }
+      });
+    }
+  });
+
+  function closePopup() {
+    document.getElementById("popupModal").style.display = "none";
+  }
+
+  function closeSuccessPopup() {
+    document.getElementById("successModal").style.display = "none";
+    location.reload();
+  }
+</script>
