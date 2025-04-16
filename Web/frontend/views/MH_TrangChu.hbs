@@ -13,7 +13,7 @@
         {{/if}}
 
         {{#if (eq user.ROLE "Tiếp nhận")}}
-        <a href="/Xu-Ly-Cap-Chung-Chi" class="action-button">
+        <a href="/xu-ly-cap-chung-chi" class="action-button">
             Xử lý trao chứng chỉ
         </a>
         {{/if}}
@@ -44,25 +44,25 @@ document.addEventListener('DOMContentLoaded', function() {
         constructor() {
             this.init();
         }
-        
+
         init() {
             const phatHanhBtn = document.getElementById('phatHanhPhieuDuThi');
             if (phatHanhBtn) {
                 phatHanhBtn.addEventListener('click', this.PhatHanhPhieuDuThi_Click.bind(this));
             }
-            
+
             this.MH_TrangChu_Load();
         }
-        
+
         PhatHanhPhieuDuThi_Click(event) {
             console.log('Redirecting to exam ticket issuance screen');
         }
-        
+
         MH_TrangChu_Load() {
             console.log('Home screen loaded');
         }
     }
-    
+
     const trangChu = new MH_TrangChu();
 });
 </script>

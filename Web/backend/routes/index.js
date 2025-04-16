@@ -157,6 +157,14 @@ router.get("/contact-admin", (req, res) => {
   res.render("contact-admin", { layout: 'login' });
 });
 
+// Trang chọn loại khách hàng (Xử lý cấp chứng chỉ) – dành cho Tiếp nhận
+router.get("/xu-ly-cap-chung-chi", isAuthenticated, hasRole("Tiếp nhận"), (req, res) => {
+  res.render("MH_XuLyCapChungChi_LoaiKH", {
+    user: req.session.user,
+    layout: "main"
+  });
+});
+
 
 
 module.exports = router;

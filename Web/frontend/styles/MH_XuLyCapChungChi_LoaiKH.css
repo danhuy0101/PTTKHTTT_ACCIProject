@@ -1,0 +1,87 @@
+body {
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-bar {
+    background-color: #039be5;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    padding: 0 24px;
+}
+
+.breadcrumb {
+    font-size: 15px;
+}
+
+.breadcrumb a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.header-icons i {
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+
+    padding-top: 80px; /* ✅ Đẩy nội dung lên cao hơn */
+    padding-bottom: 20px;
+    gap: 10px;
+
+    min-height: calc(100vh - 64px); /* Trừ phần header ra */
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 16px;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.action-button {
+    background-color: #039be5;
+    color: white;
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    width: 320px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-button:hover {
+    background-color: #0277bd;
+}
