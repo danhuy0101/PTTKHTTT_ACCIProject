@@ -120,20 +120,28 @@ router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async
 // Update ticket status
 router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
-    const { maPhieuDuThi } = req.body;
-    console.log('Mã phiếu dự thi nhận được:', maPhieuDuThi);
+    const { maphieudangky } = req.body;
+    console.log('Mã phiếu đăng ký nhận được:', maphieudangky);
     
-    if (!maPhieuDuThi) {
+    if (!maphieudangky) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Không tìm thấy mã phiếu dự thi trong yêu cầu' 
+        message: 'Không tìm thấy mã phiếu đăng ký trong yêu cầu' 
       });
     }
     
-    const result = await PhieuDuThi_Bus.CapNhatTrangThai(maPhieuDuThi, 'Đã gửi');
-    
-    // Trả về kết quả dạng JSON
-    return res.status(result.success ? 200 : 400).json(result);
+    // Create and issue an exam ticket based on the registration ID
+    const result = await PhieuDuThi_Bus.LapPhieuDuThi(maphieudangky);
+    if (result) {
+      // Update the status of the newly created ticket
+      const updateResult = await PhieuDuThi_Bus.CapNhatTrangThai(result.MAPHIEUDUTHI, 'Đã gửi');
+      return res.status(updateResult.success ? 200 : 400).json(updateResult);
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Không thể tạo phiếu dự thi'
+      });
+    }
   } catch (error) {
     console.error('Update status error:', error);
     return res.status(500).json({ 
