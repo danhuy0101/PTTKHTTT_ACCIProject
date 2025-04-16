@@ -1,0 +1,197 @@
+/* ==== Cài đặt tổng thể ==== */
+body {
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==== Thanh tiêu đề (Header) ==== */
+.header-bar {
+    background-color: #039be5;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    padding: 0 24px;
+}
+
+.breadcrumb {
+    font-size: 15px;
+}
+
+.breadcrumb a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.header-icons i {
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* ==== Nội dung chính ==== */
+.main-content {
+    padding: 40px 40px 60px 40px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 32px;
+    color: #333;
+}
+
+/* ==== Form tìm kiếm ==== */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 40px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 320px;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #039be5;
+}
+
+.form-submit {
+    margin-top: 12px;
+}
+
+.search-button {
+    padding: 10px 24px;
+    background-color: #039be5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+    background-color: #0277bd;
+}
+
+/* ==== Bảng kết quả ==== */
+.result-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.result-section th,
+.result-section td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    font-size: 14px;
+    text-align: center;
+    color: #333;
+}
+
+.result-section th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.result-section tr:hover {
+    background-color: #f0f8ff;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* ==== Nút xác nhận trao ==== */
+.submit-button {
+    margin-top: 24px;
+}
+
+.submit-button button {
+    padding: 12px 28px;
+    background-color: #43a047;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button button:hover {
+    background-color: #388e3c;
+}
+
+/* ==== Phản hồi nếu không có kết quả ==== */
+.main-content p {
+    font-size: 15px;
+    color: #999;
+    margin-top: 30px;
+}
+
+/* CSS cho modal popup */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    min-width: 300px;
+  }
+  
+  .modal-content h3 {
+    color: #0d6efd;
+    margin-bottom: 10px;
+  }
+  
+  .modal-content button {
+    margin-top: 15px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  

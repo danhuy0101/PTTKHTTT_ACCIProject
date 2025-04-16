@@ -1,0 +1,157 @@
+<link rel="stylesheet" href="/styles/MH_XuLyTraoChungChi_KHTuDo.css">
+
+<div class="header-bar">
+  <div class="breadcrumb">
+    <a href="/welcome">Trang chủ</a> &gt;
+    <a href="/xu-ly-cap-chung-chi">Xử lý cấp chứng chỉ</a> &gt;
+    Khách hàng tự do
+  </div>
+  <div class="header-icons">
+    <i class="fa fa-cog"></i>
+    <i class="fa fa-user"></i>
+    <i class="fa fa-sign-out"></i>
+  </div>
+</div>
+
+<div class="main-content">
+  <h1 class="page-title">Khách hàng tự do</h1>
+
+  <form method="get" class="search-form">
+    <div class="form-group">
+      <label for="maPhieu">Mã phiếu đăng ký:</label>
+      <input type="text" id="maPhieu" name="maPhieu" value="{{maPhieu}}">
+    </div>
+    <div class="form-group">
+      <label for="maKH">Mã khách hàng:</label>
+      <input type="text" id="maKH" name="maKH" value="{{maKH}}">
+    </div>
+    <div class="form-group">
+      <label for="hoTen">Họ và tên khách hàng:</label>
+      <input type="text" id="hoTen" name="hoTen" value="{{hoTen}}">
+    </div>
+    <div class="form-submit">
+      <button type="submit" class="search-button">
+        <i class="fa fa-search"></i> Tìm kiếm
+      </button>
+    </div>
+  </form>
+
+  {{#if hasResult}}
+  <div class="result-section">
+    <table>
+      <thead>
+        <tr>
+          <th>Mã chứng chỉ</th>
+          <th>Mã phiếu dự thi</th>
+          <th>Tên đánh giá năng lực</th>
+          <th>Họ và tên thí sinh</th>
+          <th>Ngày cấp</th>
+          <th>Kết quả</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each danhSach}}
+        <tr>
+          <td>{{this.MaChungChi}}</td>
+          <td>{{this.MaPhieuDuThi}}</td>
+          <td>{{this.TenDanhGia}}</td>
+          <td>{{this.HoTen}}</td>
+          <td>{{this.NgayCap}}</td>
+          <td>{{this.KetQua}}</td>
+          <td>{{this.TrangThai}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <div class="submit-button">
+      <button type="button" class="confirm-button">Xác nhận trao</button>
+    </div>
+  </div>
+  {{/if}}
+</div>
+
+<!-- Modal khi không có kết quả -->
+<div id="popupModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <h3>Thông báo</h3>
+    <p class="text-danger">❌ Không tìm thấy chứng chỉ !</p>
+    <button onclick="closePopup()">Thoát</button>
+  </div>
+</div>
+
+<!-- Modal khi cập nhật thành công -->
+<div id="successModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <h3>Thành công</h3>
+    <p class="text-success">✅ Đã cấp chứng chỉ thành công!</p>
+    <button onclick="closeSuccessPopup()">Đóng</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const maPhieuInput = document.getElementById('maPhieu');
+    const maKHInput = document.getElementById('maKH');
+    const hoTenInput = document.getElementById('hoTen');
+
+    async function layHoTen() {
+      const maPhieu = maPhieuInput.value.trim();
+      const maKH = maKHInput.value.trim();
+
+      if (maPhieu && maKH) {
+        try {
+          const response = await fetch(`/lay-ten-khach-hang?maPhieu=${maPhieu}&maKH=${maKH}`);
+          const data = await response.json();
+          hoTenInput.value = data.hoTen || '';
+        } catch (err) {
+          console.error("Lỗi khi lấy tên:", err);
+        }
+      }
+    }
+
+    maPhieuInput.addEventListener('blur', layHoTen);
+    maKHInput.addEventListener('blur', layHoTen);
+
+    if (!hoTenInput.value && maPhieuInput.value && maKHInput.value) {
+      layHoTen();
+    }
+
+    const shouldShowPopup = {{#if isSearched}}{{#unless hasResult}}true{{else}}false{{/unless}}{{else}}false{{/if}};
+    if (shouldShowPopup) {
+      document.getElementById("popupModal").style.display = "flex";
+    }
+
+    const confirmBtn = document.querySelector(".confirm-button");
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", async function () {
+        try {
+          const rows = document.querySelectorAll(".result-section tbody tr");
+          const maChungChiList = Array.from(rows).map(row => row.cells[0].innerText);
+          const res = await fetch("/cap-chung-chi/xac-nhan-trao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ danhSachMaChungChi: maChungChiList })
+          });
+          const result = await res.json();
+          if (result.success) {
+            document.getElementById("successModal").style.display = "flex";
+          } else {
+            alert("Lỗi cập nhật: " + result.message);
+          }
+        } catch (err) {
+          console.error("Lỗi xác nhận trao:", err);
+        }
+      });
+    }
+  });
+
+  function closePopup() {
+    document.getElementById("popupModal").style.display = "none";
+  }
+
+  function closeSuccessPopup() {
+    document.getElementById("successModal").style.display = "none";
+    location.reload();
+  }
+</script>

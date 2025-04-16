@@ -5,6 +5,7 @@ const AuthBUS = require("../bus/AuthBUS");
 const PhieuDuThi_Bus = require("../bus/PhieuDuThi_Bus");
 const ThiSinh_Bus = require("../bus/ThiSinh_Bus");
 const TrangChu_Bus = require("../bus/TrangChu_Bus");
+const ChungChi_Bus = require('../bus/ChungChi_Bus');
 
 
 // Set up session middleware
@@ -165,6 +166,76 @@ router.get("/xu-ly-cap-chung-chi", isAuthenticated, hasRole("Tiếp nhận"), (r
   });
 });
 
+
+router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
+  const { maPhieu, maKH, hoTen } = req.query;
+  let danhSach = [];
+  let hasResult = false;
+  let hoTenTuDong = hoTen;
+  let isSearched = false;
+
+  try {
+    if (maPhieu || maKH || hoTen) {
+      isSearched = true;
+      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, hoTen);
+      hasResult = danhSach.length > 0;
+
+      if (!hoTen && (maPhieu || maKH)) {
+        hoTenTuDong = await ChungChi_Bus.LayHoTenKhachHang(maPhieu, maKH);
+      }
+    }
+
+    res.render('MH_XuLyTraoChungChi_KHTuDo', {
+      layout: 'main',
+      user: req.session.user,
+      danhSach,
+      hasResult,
+      isSearched,
+      maPhieu,
+      maKH,
+      hoTen: hoTenTuDong
+    });
+  } catch (err) {
+    console.error('❌ Lỗi tìm kiếm chứng chỉ:', err);
+    res.render('MH_XuLyTraoChungChi_KHTuDo', {
+      layout: 'main',
+      user: req.session.user,
+      danhSach: [],
+      hasResult: false,
+      isSearched: true,
+      maPhieu,
+      maKH,
+      hoTen,
+      error: "Lỗi khi tìm kiếm chứng chỉ!"
+    });
+  }
+});
+
+router.get('/lay-ten-khach-hang', async (req, res) => {
+  const { maPhieu, maKH } = req.query;
+  try {
+    const ten = await ChungChi_Bus.LayHoTenKhachHang(maPhieu, maKH);
+    res.json({ hoTen: ten });
+  } catch (err) {
+    res.status(500).json({ error: 'Lỗi server' });
+  }
+});
+
+
+router.post('/cap-chung-chi/xac-nhan-trao', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
+  const { danhSachMaChungChi } = req.body;
+  if (!danhSachMaChungChi || !Array.isArray(danhSachMaChungChi)) {
+    return res.status(400).json({ success: false, message: 'Dữ liệu không hợp lệ' });
+  }
+
+  try {
+    const result = await ChungChi_Bus.CapNhatTrangThaiChungChi(danhSachMaChungChi);
+    res.json(result);
+  } catch (err) {
+    console.error('❌ Lỗi xác nhận trao:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+  }
+});
 
 
 module.exports = router;
