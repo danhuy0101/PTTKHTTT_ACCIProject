@@ -6,6 +6,7 @@ const PhieuDuThi_Bus = require("../bus/PhieuDuThi_Bus");
 const ThiSinh_Bus = require("../bus/ThiSinh_Bus");
 const TrangChu_Bus = require("../bus/TrangChu_Bus");
 
+
 // Set up session middleware
 router.use(session({
   secret: 'acci-secret-key',
@@ -145,5 +146,7 @@ router.get('/logout', (req, res) => {
 router.get("/contact-admin", (req, res) => {
   res.render("contact-admin", { layout: 'login' });
 });
+
+
 
 module.exports = router;

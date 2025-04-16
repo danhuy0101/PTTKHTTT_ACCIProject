@@ -2,13 +2,39 @@
 
 <div class="welcome-container">
     {{> header}}
-    
-    <h1 class="welcome-message">Xin chào, nhân viên phát hành.</h1>
-    
+
+    <h1 class="welcome-message">Xin chào nhân viên {{user.ROLE}}.</h1>
+
     <div class="action-buttons">
-        <a href="/phat-hanh-phieu-du-thi" class="action-button" id="phatHanhPhieuDuThi">
+        {{#if (eq user.ROLE "Phát hành")}}
+        <a href="/phat-hanh-phieu-du-thi" class="action-button">
             Phát hành phiếu dự thi
         </a>
+        {{/if}}
+
+        {{#if (eq user.ROLE "Tiếp nhận")}}
+        <a href="/Xu-Ly-Cap-Chung-Chi" class="action-button">
+            Xử lý trao chứng chỉ
+        </a>
+        {{/if}}
+
+        {{#if (eq user.ROLE "Kế toán")}}
+        <a href="/quan-ly-thanh-toan" class="action-button">
+            Quản lý thanh toán
+        </a>
+        {{/if}}
+
+        {{#if (eq user.ROLE "Nhập liệu")}}
+        <a href="/nhap-du-lieu-thi-sinh" class="action-button">
+            Nhập dữ liệu thí sinh
+        </a>
+        {{/if}}
+
+        {{#if (eq user.ROLE "Coi thi")}}
+        <a href="/quan-ly-ca-thi" class="action-button">
+            Quản lý ca thi
+        </a>
+        {{/if}}
     </div>
 </div>
 

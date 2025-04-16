@@ -6,9 +6,15 @@ class TrangChu_Bus {
         return { success: true, redirectUrl: '/phat-hanh-phieu-du-thi' };
     }
 
+    static async ChuyenTrang_XuLyCapChungChi() {
+        return { success: true, redirectUrl: '/xu-ly-cap-chung-chi' };
+    }
+
     static async ChuyenTrang_TrangChu() {
         return { success: true, redirectUrl: '/welcome' };
     }
 }
+
+
 
 module.exports = TrangChu_Bus;
