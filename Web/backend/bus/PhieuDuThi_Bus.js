@@ -15,13 +15,42 @@ class PhieuDuThi_Bus {
 
     static async CapNhatTrangThai(maPhieuDuThi, trangThai) {
         try {
-            await PhieuDuThiDAO.CapNhatTrangThai(maPhieuDuThi, trangThai);
+            const pool = await poolPromise;
+            const checkQuery = `
+                SELECT TRANGTHAI FROM PHIEUDUTHI 
+                WHERE MAPHIEUDUTHI = @maPhieuDuThi
+            `;
             
-            if (trangThai === 'Đã gửi') {
-                await this.GuiMail(maPhieuDuThi);
+            const result = await pool.request()
+                .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
+                .query(checkQuery);
+                
+            if (result.recordset.length > 0) {
+                const currentStatus = result.recordset[0].TRANGTHAI;
+                
+                if (currentStatus === 'Đã gửi') {
+                    return { 
+                        success: false, 
+                        message: 'Phiếu dự thi này đã được phát hành rồi.' 
+                    };
+                }
+                
+                await PhieuDuThiDAO.CapNhatTrangThai(maPhieuDuThi, trangThai);
+                
+                if (trangThai === 'Đã gửi') {
+                    await this.GuiMail(maPhieuDuThi);
+                }
+                
+                return { 
+                    success: true, 
+                    message: 'Phát hành thành công!' 
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: 'Không tìm thấy phiếu dự thi.' 
+                };
             }
-            
-            return { success: true };
         } catch (error) {
             console.error('Error updating exam ticket status:', error);
             throw error;
@@ -43,7 +72,6 @@ class PhieuDuThi_Bus {
 
     static async layDanhSachPhieuDuThi() {
         try {
-            // Get the connection pool
             const pool = await poolPromise;
             
             const query = `
@@ -60,11 +88,15 @@ class PhieuDuThi_Bus {
                     pdt.TRANGTHAI,
                     pdt.NGAYPHATHANH
                 FROM THISINH ts
-                JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
+                LEFT JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
                 ORDER BY ts.MATHISINH
+                OPTION (RECOMPILE)
             `;
             
-            const { recordset } = await pool.request().query(query);
+            const request = pool.request();
+            request.enableArithAbort = true;
+            
+            const { recordset } = await request.query(query);
             return recordset;
         } catch (error) {
             console.error('Error getting exam tickets:', error);
@@ -72,9 +104,8 @@ class PhieuDuThi_Bus {
         }
     }
 
-    static async timKiemTheoTen(tenThiSinh) {
+    static async timKiem(searchQuery) {
         try {
-            // Get the connection pool
             const pool = await poolPromise;
             
             const query = `
@@ -91,13 +122,14 @@ class PhieuDuThi_Bus {
                     pdt.TRANGTHAI,
                     pdt.NGAYPHATHANH
                 FROM THISINH ts
-                JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
-                WHERE ts.TENTHISINH LIKE N'%' + @tenThiSinh + N'%'
+                LEFT JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
+                WHERE ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
+                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%'
                 ORDER BY ts.MATHISINH
             `;
             
             const { recordset } = await pool.request()
-                .input('tenThiSinh', sql.NVarChar, tenThiSinh)
+                .input('searchQuery', sql.NVarChar, searchQuery)
                 .query(query);
             
             return recordset;

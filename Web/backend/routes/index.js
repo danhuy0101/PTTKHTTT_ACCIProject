@@ -98,12 +98,12 @@ router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), a
 // Search candidates
 router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
-    const { tenThiSinh } = req.body;
-    const danhSachPhieu = await PhieuDuThi_Bus.timKiemTheoTen(tenThiSinh);
+    const { searchQuery } = req.body;
+    const danhSachPhieu = await PhieuDuThi_Bus.timKiem(searchQuery);
     
     res.render('MH_LapPhieuDuThi', { 
       danhSachPhieu,
-      searchQuery: tenThiSinh,
+      searchQuery: searchQuery,
       user: req.session.user
     });
   } catch (error) {
@@ -119,14 +119,24 @@ router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async
 router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
     const { maPhieuDuThi } = req.body;
-    await PhieuDuThi_Bus.capNhatTrangThaiPhieuDuThi(maPhieuDuThi);
+    console.log('Mã phiếu dự thi nhận được:', maPhieuDuThi);
     
-    res.redirect('/phat-hanh-phieu-du-thi');
+    if (!maPhieuDuThi) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Không tìm thấy mã phiếu dự thi trong yêu cầu' 
+      });
+    }
+    
+    const result = await PhieuDuThi_Bus.CapNhatTrangThai(maPhieuDuThi, 'Đã gửi');
+    
+    // Trả về kết quả dạng JSON
+    return res.status(result.success ? 200 : 400).json(result);
   } catch (error) {
     console.error('Update status error:', error);
-    res.render('error', { 
-      message: 'Lỗi cập nhật trạng thái phiếu dự thi',
-      error: error
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Lỗi cập nhật trạng thái phiếu dự thi' 
     });
   }
 });

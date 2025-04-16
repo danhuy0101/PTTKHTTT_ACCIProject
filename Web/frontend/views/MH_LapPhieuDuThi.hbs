@@ -9,12 +9,16 @@
         <div class="search-section">
             <form action="/tim-kiem-thi-sinh" method="POST" class="search-form" id="searchForm">
                 <div class="search-wrapper">
-                    <input type="text" name="tenThiSinh" placeholder="Nhập mã thí sinh" value="{{searchQuery}}" class="search-input" id="searchInput">
+                    <input type="text" name="searchQuery" placeholder="Nhập tên hoặc mã thí sinh" value="{{searchQuery}}" class="search-input" id="searchInput">
                     <button type="submit" class="search-button" id="btnTimKiem">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                 </div>
             </form>
+            <button type="button" id="btnRefresh" class="refresh-button" style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center;">
+                <i class="fa-solid fa-sync-alt" style="margin-right: 5px;"></i>
+                Làm mới dữ liệu
+            </button>
         </div>
 
         <div class="table-container">
@@ -32,7 +36,7 @@
                 </thead>
                 <tbody>
                     {{#each danhSachPhieu}}
-                    <tr class="{{#if (eq this.TRANGTHAI 'Chưa gửi')}}highlight{{/if}}">
+                    <tr>
                         <td>{{this.MATHISINH}}</td>
                         <td>{{this.TENTHISINH}}</td>
                         <td>{{formatDate this.NGAYSINH}}</td>
@@ -55,6 +59,21 @@
                 </button>
             </form>
         </div>
+    </div>
+</div>
+
+<div id="successModal" class="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; z-index: 1000; width: 300px; overflow: hidden;">
+    <div class="modal-header" style="background-color: #00a0d2; color: white; padding: 10px 15px; font-weight: bold; text-align: center;">
+        Thông báo
+    </div>
+    <div class="modal-content" style="padding: 20px 15px;">
+        <div style="margin-bottom: 15px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" style="fill: #4CAF50;">
+                <circle cx="12" cy="12" r="12" fill="#E8F5E9"/>
+                <path d="M10.3 16.7l-4-4 1.4-1.4 2.6 2.6 6.6-6.6 1.4 1.4z" fill="#4CAF50"/>
+            </svg>
+        </div>
+        <p style="margin: 0; color: #333; font-size: 16px;">Phát hành thành công!</p>
     </div>
 </div>
 
@@ -106,6 +125,11 @@
                     searchBtn.addEventListener('click', this.btnTimKiem_Click.bind(this));
                 }
                 
+                const refreshBtn = document.getElementById('btnRefresh');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', this.btnRefresh_Click.bind(this));
+                }
+                
                 const selectAllBtn = document.getElementById('btnChonTatCa');
                 if (selectAllBtn) {
                     selectAllBtn.addEventListener('click', this.btnChonTatCa_Click.bind(this));
@@ -115,19 +139,65 @@
             MH_LapPhieuDuThi_Load() {
                 console.log('Exam ticket issuance screen loaded');
                 document.getElementById('btnPhatHanh').disabled = true;
-                document.getElementById('btnPhatHanh').disabled = true;
             }
             
             btnPhatHanh_Click() {
                 if (this.selectedRow) {
-                    if (!this.selectedRow.classList.contains('highlight')) {
-                        alert('Phiếu dự thi này đã được phát hành.');
-                        return;
-                    }
-                    
                     if (confirm('Bạn có chắc chắn muốn phát hành phiếu dự thi này?')) {
                         console.log('Issuing ticket...');
-                        document.getElementById('phatHanhForm').submit();
+                        
+                        const maphieuduthi = this.selectedRow.cells[6].textContent.trim();
+                        console.log('Mã phiếu dự thi:', maphieuduthi);
+                        
+                        document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+
+                        const form = document.getElementById('phatHanhForm');
+                        
+                        fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `maPhieuDuThi=${encodeURIComponent(maphieuduthi)}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const modal = document.getElementById('successModal');
+                            const modalTitle = modal.querySelector('.modal-header');
+                            const modalContent = modal.querySelector('p');
+                            const iconContainer = modal.querySelector('.modal-content > div');
+                            
+                            if (data.success) {
+                                modalTitle.textContent = 'Thông báo';
+                                modalContent.textContent = 'Phát hành thành công!';
+                                iconContainer.innerHTML = `
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" style="fill: #4CAF50;">
+                                        <circle cx="12" cy="12" r="12" fill="#E8F5E9"/>
+                                        <path d="M10.3 16.7l-4-4 1.4-1.4 2.6 2.6 6.6-6.6 1.4 1.4z" fill="#4CAF50"/>
+                                    </svg>
+                                `;
+                            } else {
+                                modalTitle.textContent = 'Thông báo';
+                                modalContent.textContent = data.message || 'Có lỗi xảy ra khi phát hành phiếu dự thi.';
+                                iconContainer.innerHTML = `
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" style="fill: #FF9800;">
+                                        <circle cx="12" cy="12" r="12" fill="#FFF3E0"/>
+                                        <path d="M13 16h-2v-2h2v2zm0-4h-2V7h2v5z" fill="#FF9800"/>
+                                    </svg>
+                                `;
+                            }
+                            
+                            modal.style.display = 'block';
+                            
+                            setTimeout(() => {
+                                modal.style.display = 'none';
+                                window.location.reload();
+                            }, 2000);
+                        })
+                        .catch(error => {
+                            console.error('Lỗi:', error);
+                            alert('Có lỗi xảy ra khi phát hành phiếu dự thi. Vui lòng thử lại sau.');
+                        });
                     }
                 } else {
                     alert('Vui lòng chọn một thí sinh.');
@@ -137,14 +207,20 @@
             btnChonTatCa_Click() {
                 console.log('Selecting all candidates...');
                 const tableRows = document.querySelectorAll('.candidates-table tbody tr');
-                tableRows.forEach(row => {
-                    if (row.classList.contains('highlight')) {
-                        row.classList.add('selected');
-                        this.selectedRow = row;
-                    }
-                });
                 
-                if (document.querySelectorAll('.candidates-table tbody tr.selected').length > 0) {
+                if (this.selectedRow) {
+                    this.selectedRow.classList.remove('selected');
+                    this.selectedRow = null;
+                }
+                
+                if (tableRows.length > 0) {
+                    const firstRow = tableRows[0];
+                    firstRow.classList.add('selected');
+                    this.selectedRow = firstRow;
+                    
+                    const maphieuduthi = firstRow.cells[6].textContent;
+                    document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+                    
                     document.getElementById('btnPhatHanh').disabled = false;
                 }
             }
@@ -156,6 +232,16 @@
                     event.preventDefault();
                     alert('Vui lòng nhập mã thí sinh để tìm kiếm.');
                 }
+            }
+            
+            btnRefresh_Click() {
+                console.log('Refreshing data...');
+                const refreshBtn = document.getElementById('btnRefresh');
+                const originalContent = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
+                refreshBtn.disabled = true;
+                
+                window.location.reload();
             }
         }
         
