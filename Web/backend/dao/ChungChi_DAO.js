@@ -9,6 +9,9 @@ class ChungChi_DAO {
                 SELECT 
                     cc.MaChungChi,
                     pd.MaPhieuDuThi,
+                    pdk.MaPhieuDangKy,
+                    kh.MaKhachHang,
+                    kh.TenKhachHang,
                     ld.TENDANHGIA AS TenDanhGia,
                     ts.TENTHISINH AS HoTen,
                     cc.NgayCap,
@@ -17,8 +20,9 @@ class ChungChi_DAO {
                 FROM CHUNGCHI cc
                 JOIN PHIEUDUTHI pd ON cc.MaPhieuDuThi = pd.MaPhieuDuThi
                 JOIN THISINH ts ON pd.MaThiSinh = ts.MaThiSinh
-                JOIN PHIEUDANGKY pdk ON ts.MaPhieuDangKy = pdk.MaPhieuDangKy
-                JOIN LICHTHI lt ON pdk.MaLichThi = lt.MaLichThi
+                JOIN PHIEUDANGKY pdk ON pd.MaPhieuDangKy = pdk.MaPhieuDangKy
+                JOIN KHACHHANG kh ON cc.MaKhachHang = kh.MaKhachHang
+				JOIN LICHTHI lt ON pdk.MaLichThi = lt.MaLichThi
                 JOIN LOAIDANHGIANANGLUC ld ON lt.MADANHGIA = ld.MADANHGIA
                 WHERE 1=1
             `;
@@ -31,12 +35,12 @@ class ChungChi_DAO {
             }
 
             if (maKH) {
-                query += ` AND cc.MaKhachHang = @maKH`;
+                query += ` AND kh.MaKhachHang = @maKH`;
                 request.input('maKH', sql.NVarChar, maKH);
             }
 
             if (hoTen) {
-                query += ` AND LOWER(ts.TENTHISINH) LIKE @hoTen`;
+                query += ` AND LOWER(kh.TenKhachHang) LIKE @hoTen`;
                 request.input('hoTen', sql.NVarChar, `%${hoTen.toLowerCase()}%`);
             }
 
@@ -76,26 +80,34 @@ class ChungChi_DAO {
 
     static async CapNhatTrangThaiChungChi(danhSachMaChungChi) {
         try {
-          const pool = await poolPromise;
-          const request = pool.request();
-          const updateQuery = `
-            UPDATE CHUNGCHI
-            SET TrangThai = N'Đã nhận'
-            WHERE MaChungChi IN (${danhSachMaChungChi.map((_, i) => `@id${i}`).join(",")})
-          `;
-      
-          danhSachMaChungChi.forEach((id, i) => {
-            request.input(`id${i}`, sql.NVarChar, id);
-          });
-      
-          await request.query(updateQuery);
-          return { success: true, message: 'Đã cập nhật trạng thái' };
+            if (!danhSachMaChungChi || !Array.isArray(danhSachMaChungChi) || danhSachMaChungChi.length === 0) {
+                return { success: false, message: 'Danh sách mã chứng chỉ trống hoặc không hợp lệ' };
+            }
+
+            const pool = await poolPromise;
+            const request = pool.request();
+
+            // Escape các giá trị để tránh lỗi
+            const escapedIds = danhSachMaChungChi
+                .map(id => `'${id.replace(/'/g, "''")}'`)
+                .join(',');
+
+            const updateQuery = `
+                UPDATE CHUNGCHI
+                SET TrangThai = N'Đã nhận'
+                WHERE MaChungChi IN (${escapedIds})
+            `;
+
+            console.log("⚙️ Query UPDATE:", updateQuery);
+
+            await request.query(updateQuery);
+
+            return { success: true, message: 'Đã cập nhật trạng thái' };
         } catch (err) {
-          console.error("❌ Lỗi cập nhật trạng thái chứng chỉ:", err);
-          return { success: false, message: 'Lỗi khi cập nhật' };
+            console.error("❌ Lỗi cập nhật trạng thái chứng chỉ:", err);
+            return { success: false, message: 'Lỗi khi cập nhật: ' + err.message };
         }
-      }
-      
+    }
 }
 
 module.exports = ChungChi_DAO;

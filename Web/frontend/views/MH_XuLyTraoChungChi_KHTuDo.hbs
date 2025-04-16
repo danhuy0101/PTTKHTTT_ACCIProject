@@ -43,6 +43,9 @@
         <tr>
           <th>Mã chứng chỉ</th>
           <th>Mã phiếu dự thi</th>
+          <th>Mã phiếu đăng ký</th>         <!-- ✅ Thêm -->
+          <th>Mã khách hàng</th>            <!-- ✅ Thêm -->
+          <th>Họ tên khách hàng</th>        <!-- ✅ Thêm -->
           <th>Tên đánh giá năng lực</th>
           <th>Họ và tên thí sinh</th>
           <th>Ngày cấp</th>
@@ -55,6 +58,9 @@
         <tr>
           <td>{{this.MaChungChi}}</td>
           <td>{{this.MaPhieuDuThi}}</td>
+          <td>{{this.MaPhieuDangKy}}</td>    <!-- ✅ Thêm -->
+          <td>{{this.MaKhachHang}}</td>      <!-- ✅ Thêm -->
+          <td>{{this.TenKhachHang}}</td>     <!-- ✅ Thêm -->
           <td>{{this.TenDanhGia}}</td>
           <td>{{this.HoTen}}</td>
           <td>{{this.NgayCap}}</td>
@@ -155,3 +161,5 @@
     location.reload();
   }
 </script>
+
+console.log("Danh sách mã cần cập nhật:", maChungChiList);
