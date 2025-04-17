@@ -115,15 +115,14 @@ class PhieuDuThi_Bus {
                     ts.SĐT AS SDT,
                     ts.DIACHI,
                     ts.EMAIL,
-                    ts.MAPHIEUDANGKY,
-                    pdt.MAPHIEUDUTHI,
-                    pdt.SBD,
-                    pdt.TRANGTHAI,
-                    pdt.NGAYPHATHANH
+                    ts.MAPHIEUDANGKY
                 FROM THISINH ts
-                LEFT JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
-                WHERE ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
-                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%'
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM PHIEUDUTHI pdt 
+                    WHERE ts.MATHISINH = pdt.MATHISINH
+                )
+                AND (ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
+                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%')
                 ORDER BY ts.MATHISINH
             `;
             

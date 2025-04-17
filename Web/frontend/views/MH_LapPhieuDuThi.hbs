@@ -15,10 +15,7 @@
                     </button>
                 </div>
             </form>
-            <button type="button" id="btnRefresh" class="refresh-button" style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center;">
-                <i class="fa-solid fa-sync-alt" style="margin-right: 5px;"></i>
-                Làm mới dữ liệu
-            </button>
+
         </div>
 
         <div class="table-container">
@@ -129,10 +126,7 @@
                     searchBtn.addEventListener('click', this.btnTimKiem_Click.bind(this));
                 }
                 
-                const refreshBtn = document.getElementById('btnRefresh');
-                if (refreshBtn) {
-                    refreshBtn.addEventListener('click', this.btnRefresh_Click.bind(this));
-                }
+
                 
                 const selectAllBtn = document.getElementById('btnChonTatCa');
                 if (selectAllBtn) {
@@ -197,7 +191,8 @@
                             
                             setTimeout(() => {
                                 modal.style.display = 'none';
-                                window.location.reload();
+                                // Redirect to main page instead of reload to clear any search parameters
+                                window.location.href = '/phat-hanh-phieu-du-thi';
                             }, 2000);
                         })
                         .catch(error => {
@@ -242,15 +237,7 @@
                 }
             }
             
-            btnRefresh_Click() {
-                console.log('Refreshing data...');
-                const refreshBtn = document.getElementById('btnRefresh');
-                const originalContent = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
-                refreshBtn.disabled = true;
-                
-                window.location.reload();
-            }
+
         }
         
         const lapPhieuDuThi = new MH_LapPhieuDuThi();
