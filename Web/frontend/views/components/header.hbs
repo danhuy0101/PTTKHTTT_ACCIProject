@@ -1,12 +1,16 @@
-<div class="header">
+<link rel="stylesheet" href="/styles/common.css">
+
+<header class="header-bar">
     {{#if showBreadcrumb}}
     <div class="breadcrumb">
-        <a href="/welcome">Trang chủ</a> {{#if breadcrumbText}}> {{breadcrumbText}}{{/if}}
+        <a href="/welcome">Trang chủ</a>
+        {{#if breadcrumbText}}> {{breadcrumbText}} {{/if}}
+        {{#if breadcrumbText2}}> {{breadcrumbText2}} {{/if}}
     </div>
     {{/if}}
-    <div class="header-actions">
-        <button class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun"></i></button>
-        <button class="user-profile"><i class="fa-solid fa-user"></i></button>
-        <a href="/logout" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+    <div class="header-icons">
+        <i class="fa fa-cog"></i>
+        <i class="fa fa-user"></i>
+        <a href="/logout" class="logout-btn"><i class="fa fa-sign-out"></i></a>
     </div>
-</div>
+</header>

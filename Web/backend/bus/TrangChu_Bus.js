@@ -10,6 +10,10 @@ class TrangChu_Bus {
         return { success: true, redirectUrl: '/xu-ly-cap-chung-chi' }; // ĐÃ THÊM
     }
 
+    static async DangKyDuThi() {
+        return { success: true, redirectUrl: '/dang-ky-du-thi' };
+    }
+
     static async ChuyenTrang_TrangChu() {
         return { success: true, redirectUrl: '/welcome' };
     }

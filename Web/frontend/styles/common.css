@@ -1,5 +1,6 @@
 :root {
-    --primary-color: #0099cc;
+    --primary-color: #407BFF;
+    --primary-color-darker: #1c56d2;
     --secondary-color: #f8f9fa;
     --accent-color: #28a745;
     --danger-color: #dc3545;
@@ -17,46 +18,31 @@ html, body {
     font-family: 'Montserrat', sans-serif;
     background-color: #ffffff;
     color: var(--text-color);
-    overflow-x: hidden;
 }
 
 /* Header styles */
-.header {
+.header-bar {
+    background-color: var(--primary-color);
+    color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background-color: #009dd4;
-    color: white;
-    width: 100%;
-    box-sizing: border-box;
+    height: 64px;
+    padding: 0 24px;
 }
 
 .breadcrumb {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .breadcrumb a {
     color: white;
     text-decoration: none;
-    margin-right: 5px;
+    font-weight: bold;
 }
 
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.theme-toggle, .user-profile, .logout-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
+.header-icons i {
+    margin-left: 20px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 18px;
 }

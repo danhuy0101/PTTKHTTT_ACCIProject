@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require('../dao/DB');
+const { sql, poolPromise } = require('../../db');
 const PhieuDuThiDAO = require('../dao/PhieuDuThiDAO');
 const ThiSinh_Bus = require('./ThiSinh_Bus');
 

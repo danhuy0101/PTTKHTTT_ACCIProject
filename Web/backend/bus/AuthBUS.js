@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require('../dao/DB');
+const { sql, poolPromise } = require('../../db');
 
 class AuthBUS {
     static async authenticate(username, password) {
