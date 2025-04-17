@@ -72,31 +72,8 @@ class PhieuDuThi_Bus {
 
     static async layDanhSachPhieuDuThi() {
         try {
-            const pool = await poolPromise;
-            
-            const query = `
-                SELECT 
-                    ts.MATHISINH,
-                    ts.TENTHISINH,
-                    ts.NGAYSINH,
-                    ts.SĐT AS SDT,
-                    ts.DIACHI,
-                    ts.EMAIL,
-                    ts.MAPHIEUDANGKY
-                FROM THISINH ts
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM PHIEUDUTHI pdt 
-                    WHERE ts.MATHISINH = pdt.MATHISINH
-                )
-                ORDER BY ts.MATHISINH
-                OPTION (RECOMPILE)
-            `;
-            
-            const request = pool.request();
-            request.enableArithAbort = true;
-            
-            const { recordset } = await request.query(query);
-            return recordset;
+            const danhSachThiSinh = await ThiSinh_Bus.LayDanhSachThiSinhChuaCoPhieuDuThi();
+            return danhSachThiSinh;
         } catch (error) {
             console.error('Error getting exam tickets:', error);
             throw error;
@@ -105,32 +82,8 @@ class PhieuDuThi_Bus {
 
     static async timKiem(searchQuery) {
         try {
-            const pool = await poolPromise;
-            
-            const query = `
-                SELECT 
-                    ts.MATHISINH,
-                    ts.TENTHISINH,
-                    ts.NGAYSINH,
-                    ts.SĐT AS SDT,
-                    ts.DIACHI,
-                    ts.EMAIL,
-                    ts.MAPHIEUDANGKY
-                FROM THISINH ts
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM PHIEUDUTHI pdt 
-                    WHERE ts.MATHISINH = pdt.MATHISINH
-                )
-                AND (ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
-                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%')
-                ORDER BY ts.MATHISINH
-            `;
-            
-            const { recordset } = await pool.request()
-                .input('searchQuery', sql.NVarChar, searchQuery)
-                .query(query);
-            
-            return recordset;
+            const ketQuaTimKiem = await ThiSinh_Bus.TimKiemThiSinhChuaCoPhieuDuThi(searchQuery);
+            return ketQuaTimKiem;
         } catch (error) {
             console.error('Error searching candidates:', error);
             throw error;
