@@ -2,26 +2,6 @@ const { sql, poolPromise } = require('../../db');
 const ThiSinhDAO = require('../dao/ThiSinhDAO');
 
 class ThiSinh_Bus {
-    static async LayDanhSachThiSinh() {
-        try {
-            const danhSachThiSinh = await ThiSinhDAO.LayDanhSachThiSinh();
-            return danhSachThiSinh;
-        } catch (error) {
-            console.error('Error getting candidate list:', error);
-            throw error;
-        }
-    }
-
-    static async LocThiSinh(maThiSinh) {
-        try {
-            const thiSinh = await ThiSinhDAO.TimThiSinh(maThiSinh);
-            return thiSinh;
-        } catch (error) {
-            console.error('Error finding candidate:', error);
-            throw error;
-        }
-    }
-
     static async LayDanhSachThiSinhChoPhieuDuThi() {
         try {
             const pool = await poolPromise;
