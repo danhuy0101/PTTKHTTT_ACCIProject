@@ -120,20 +120,29 @@ router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async
 // Update ticket status
 router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
-    const { maPhieuDuThi } = req.body;
-    console.log('Mã phiếu dự thi nhận được:', maPhieuDuThi);
+    const { maphieudangky, mathisinh } = req.body;
+    console.log('Mã thí sinh nhận được:', mathisinh);
+    console.log('Mã phiếu đăng ký nhận được:', maphieudangky);
     
-    if (!maPhieuDuThi) {
+    if (!maphieudangky || !mathisinh) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Không tìm thấy mã phiếu dự thi trong yêu cầu' 
+        message: 'Thiếu thông tin cần thiết để phát hành phiếu dự thi' 
       });
     }
     
-    const result = await PhieuDuThi_Bus.CapNhatTrangThai(maPhieuDuThi, 'Đã gửi');
-    
-    // Trả về kết quả dạng JSON
-    return res.status(result.success ? 200 : 400).json(result);
+    // Create and issue an exam ticket based on both registration ID and candidate ID
+    const result = await PhieuDuThi_Bus.LapPhieuDuThi(maphieudangky, parseInt(mathisinh));
+    if (result) {
+      // Update the status of the newly created ticket
+      const updateResult = await PhieuDuThi_Bus.CapNhatTrangThai(result.MAPHIEUDUTHI, 'Đã gửi');
+      return res.status(updateResult.success ? 200 : 400).json(updateResult);
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Không thể tạo phiếu dự thi'
+      });
+    }
   } catch (error) {
     console.error('Update status error:', error);
     return res.status(500).json({ 
@@ -167,22 +176,18 @@ router.get("/xu-ly-cap-chung-chi", isAuthenticated, hasRole("Tiếp nhận"), (r
 });
 
 
+// Tự do
 router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
-  const { maPhieu, maKH, hoTen } = req.query;
+  const { maPhieu, maKH } = req.query;
   let danhSach = [];
   let hasResult = false;
-  let hoTenTuDong = hoTen;
   let isSearched = false;
 
   try {
-    if (maPhieu || maKH || hoTen) {
+    if (maPhieu || maKH) {
       isSearched = true;
-      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, hoTen);
+      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, 'Tự do');
       hasResult = danhSach.length > 0;
-
-      if (!hoTen && (maPhieu || maKH)) {
-        hoTenTuDong = await ChungChi_Bus.LayHoTenKhachHang(maPhieu, maKH);
-      }
     }
 
     res.render('MH_XuLyTraoChungChi_KHTuDo', {
@@ -192,8 +197,7 @@ router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), as
       hasResult,
       isSearched,
       maPhieu,
-      maKH,
-      hoTen: hoTenTuDong
+      maKH
     });
   } catch (err) {
     console.error('❌ Lỗi tìm kiếm chứng chỉ:', err);
@@ -205,35 +209,45 @@ router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), as
       isSearched: true,
       maPhieu,
       maKH,
-      hoTen,
       error: "Lỗi khi tìm kiếm chứng chỉ!"
     });
   }
 });
 
-router.get('/lay-ten-khach-hang', async (req, res) => {
+// Đơn vị
+router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
   const { maPhieu, maKH } = req.query;
-  try {
-    const ten = await ChungChi_Bus.LayHoTenKhachHang(maPhieu, maKH);
-    res.json({ hoTen: ten });
-  } catch (err) {
-    res.status(500).json({ error: 'Lỗi server' });
-  }
-});
-
-
-router.post('/cap-chung-chi/xac-nhan-trao', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
-  const { danhSachMaChungChi } = req.body;
-  if (!danhSachMaChungChi || !Array.isArray(danhSachMaChungChi)) {
-    return res.status(400).json({ success: false, message: 'Dữ liệu không hợp lệ' });
-  }
+  let danhSach = [];
+  let isSearched = false;
+  let hasResult = false;
 
   try {
-    const result = await ChungChi_Bus.CapNhatTrangThaiChungChi(danhSachMaChungChi);
-    res.json(result);
+    if (maPhieu || maKH) {
+      isSearched = true;
+      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, 'Đơn vị');
+      hasResult = danhSach.length > 0;
+    }
+
+    res.render('MH_XuLyTraoChungChi_KHDonVi', {
+      layout: 'main',
+      user: req.session.user,
+      danhSach,
+      maPhieu,
+      maKH,
+      isSearched,
+      hasResult
+    });
   } catch (err) {
-    console.error('❌ Lỗi xác nhận trao:', err);
-    res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    console.error('❌ Lỗi KH đơn vị:', err);
+    res.render('MH_XuLyTraoChungChi_KHDonVi', {
+      layout: 'main',
+      user: req.session.user,
+      danhSach: [],
+      isSearched: true,
+      hasResult: false,
+      maPhieu,
+      maKH
+    });
   }
 });
 

@@ -1,11 +1,10 @@
-{{!-- ✅ MH_XuLyTraoChungChi_KHTuDo.hbs đã xóa ô họ tên --}}
 <link rel="stylesheet" href="/styles/MH_XuLyTraoChungChi_KHTuDo.css">
 
 <div class="header-bar">
   <div class="breadcrumb">
     <a href="/welcome">Trang chủ</a> &gt;
     <a href="/xu-ly-cap-chung-chi">Xử lý cấp chứng chỉ</a> &gt;
-    Khách hàng tự do
+    Khách hàng đơn vị
   </div>
   <div class="header-icons">
     <i class="fa fa-cog"></i>
@@ -14,8 +13,9 @@
   </div>
 </div>
 
+
 <div class="main-content">
-  <h1 class="page-title">Khách hàng tự do</h1>
+  <h1 class="page-title">Khách hàng đơn vị</h1>
 
   <form method="get" class="search-form">
     <div class="form-group">
@@ -38,13 +38,14 @@
     <table>
       <thead>
         <tr>
+          <th><input type="checkbox" id="selectAll"></th>
           <th>Mã chứng chỉ</th>
           <th>Mã phiếu dự thi</th>
           <th>Mã phiếu đăng ký</th>
           <th>Mã khách hàng</th>
-          <th>Họ tên khách hàng</th>
-          <th>Tên đánh giá năng lực</th>
-          <th>Họ và tên thí sinh</th>
+          <th>Tên khách hàng</th>
+          <th>Tên đánh giá</th>
+          <th>Họ tên thí sinh</th>
           <th>Ngày cấp</th>
           <th>Kết quả</th>
           <th>Trạng thái</th>
@@ -53,6 +54,7 @@
       <tbody>
         {{#each danhSach}}
         <tr>
+          <td><input type="checkbox" class="row-checkbox" value="{{this.MaChungChi}}"></td>
           <td>{{this.MaChungChi}}</td>
           <td>{{this.MaPhieuDuThi}}</td>
           <td>{{this.MaPhieuDangKy}}</td>
@@ -72,52 +74,67 @@
     </div>
   </div>
   {{/if}}
-</div>
 
-<div id="popupModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <h3>Thông báo</h3>
-    <p class="text-danger">❌ Không tìm thấy chứng chỉ !</p>
-    <button onclick="closePopup()">Thoát</button>
+  <div id="popupModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Thông báo</h3>
+      <p class="text-danger">❌ Không tìm thấy chứng chỉ !</p>
+      <button onclick="closePopup()">Thoát</button>
+    </div>
   </div>
-</div>
 
-<div id="successModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <h3>Thành công</h3>
-    <p class="text-success">✅ Đã cấp chứng chỉ thành công!</p>
-    <button onclick="closeSuccessPopup()">Đóng</button>
+  <div id="successModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Thành công</h3>
+      <p class="text-success">✅ Đã cấp chứng chỉ thành công!</p>
+      <button onclick="closeSuccessPopup()">Đóng</button>
+    </div>
   </div>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    const shouldShowPopup = {{#if isSearched}}{{#unless hasResult}}true{{else}}false{{/unless}}{{else}}false{{/if}};
+    if (shouldShowPopup) {
+      document.getElementById("popupModal").style.display = "flex";
+    }
+
+    // Xử lý chọn tất cả
+    const selectAllCheckbox = document.getElementById("selectAll");
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener("change", function () {
+        const checkboxes = document.querySelectorAll(".row-checkbox");
+        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+      });
+    }
+
+    // Xử lý nút xác nhận
     const confirmBtn = document.querySelector(".confirm-button");
     if (confirmBtn) {
       confirmBtn.addEventListener("click", async function () {
+        const selected = Array.from(document.querySelectorAll(".row-checkbox:checked"))
+                              .map(cb => cb.value);
+        if (selected.length === 0) {
+          alert("Vui lòng chọn ít nhất một chứng chỉ.");
+          return;
+        }
+
         try {
-          const rows = document.querySelectorAll(".result-section tbody tr");
-          const maChungChiList = Array.from(rows).map(row => row.cells[0].innerText);
           const res = await fetch("/cap-chung-chi/xac-nhan-trao", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ danhSachMaChungChi: maChungChiList })
+            body: JSON.stringify({ danhSachMaChungChi: selected })
           });
           const result = await res.json();
           if (result.success) {
             document.getElementById("successModal").style.display = "flex";
           } else {
-            alert("Lỗi cập nhật: " + result.message);
+            alert("Lỗi: " + result.message);
           }
         } catch (err) {
           console.error("Lỗi xác nhận trao:", err);
         }
       });
-    }
-
-    const shouldShowPopup = {{#if isSearched}}{{#unless hasResult}}true{{else}}false{{/unless}}{{else}}false{{/if}};
-    if (shouldShowPopup) {
-      document.getElementById("popupModal").style.display = "flex";
     }
   });
 

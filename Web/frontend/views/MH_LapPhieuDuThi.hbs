@@ -15,10 +15,7 @@
                     </button>
                 </div>
             </form>
-            <button type="button" id="btnRefresh" class="refresh-button" style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center;">
-                <i class="fa-solid fa-sync-alt" style="margin-right: 5px;"></i>
-                Làm mới dữ liệu
-            </button>
+
         </div>
 
         <div class="table-container">
@@ -53,7 +50,8 @@
         <div class="action-container">
             <button type="button" id="btnChonTatCa" class="btn-select-all">Chọn tất cả</button>
             <form action="/cap-nhat-trang-thai" method="POST" id="phatHanhForm">
-                <input type="hidden" name="maPhieuDuThi" id="maPhieuDuThiInput">
+                <input type="hidden" name="maphieudangky" id="maPhieuDangKyInput">
+                <input type="hidden" name="mathisinh" id="maThiSinhInput">
                 <button type="button" id="btnPhatHanh" class="phat-hanh-btn">
                     <i class="fa-solid fa-print"></i> Phát hành
                 </button>
@@ -108,8 +106,11 @@
                 row.classList.add('selected');
                 this.selectedRow = row;
                 
-                const maphieuduthi = row.cells[6].textContent;
-                document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+                const mathisinh = row.cells[0].textContent.trim();
+                const maphieudangky = row.cells[6].textContent.trim();
+                
+                document.getElementById('maThiSinhInput').value = mathisinh;
+                document.getElementById('maPhieuDangKyInput').value = maphieudangky;
                 
                 document.getElementById('btnPhatHanh').disabled = false;
             }
@@ -125,10 +126,7 @@
                     searchBtn.addEventListener('click', this.btnTimKiem_Click.bind(this));
                 }
                 
-                const refreshBtn = document.getElementById('btnRefresh');
-                if (refreshBtn) {
-                    refreshBtn.addEventListener('click', this.btnRefresh_Click.bind(this));
-                }
+
                 
                 const selectAllBtn = document.getElementById('btnChonTatCa');
                 if (selectAllBtn) {
@@ -145,11 +143,13 @@
                 if (this.selectedRow) {
                     if (confirm('Bạn có chắc chắn muốn phát hành phiếu dự thi này?')) {
                         console.log('Issuing ticket...');
+                        const mathisinh = this.selectedRow.cells[0].textContent.trim();
+                        const maphieudangky = this.selectedRow.cells[6].textContent.trim();
+                        console.log('Mã thí sinh:', mathisinh);
+                        console.log('Mã phiếu đăng ký:', maphieudangky);
                         
-                        const maphieuduthi = this.selectedRow.cells[6].textContent.trim();
-                        console.log('Mã phiếu dự thi:', maphieuduthi);
-                        
-                        document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+                        document.getElementById('maThiSinhInput').value = mathisinh;
+                        document.getElementById('maPhieuDangKyInput').value = maphieudangky;
 
                         const form = document.getElementById('phatHanhForm');
                         
@@ -158,7 +158,7 @@
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
                             },
-                            body: `maphieuduthi=${encodeURIComponent(maphieuduthi)}`
+                            body: `mathisinh=${encodeURIComponent(mathisinh)}&maphieudangky=${encodeURIComponent(maphieudangky)}`
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -191,7 +191,8 @@
                             
                             setTimeout(() => {
                                 modal.style.display = 'none';
-                                window.location.reload();
+                                // Redirect to main page instead of reload to clear any search parameters
+                                window.location.href = '/phat-hanh-phieu-du-thi';
                             }, 2000);
                         })
                         .catch(error => {
@@ -218,8 +219,10 @@
                     firstRow.classList.add('selected');
                     this.selectedRow = firstRow;
                     
-                    const maphieuduthi = firstRow.cells[6].textContent;
-                    document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+                    const mathisinh = firstRow.cells[0].textContent.trim();
+                    const maphieudangky = firstRow.cells[6].textContent.trim();
+                    document.getElementById('maThiSinhInput').value = mathisinh;
+                    document.getElementById('maPhieuDangKyInput').value = maphieudangky;
                     
                     document.getElementById('btnPhatHanh').disabled = false;
                 }
@@ -234,15 +237,7 @@
                 }
             }
             
-            btnRefresh_Click() {
-                console.log('Refreshing data...');
-                const refreshBtn = document.getElementById('btnRefresh');
-                const originalContent = refreshBtn.innerHTML;
-                refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
-                refreshBtn.disabled = true;
-                
-                window.location.reload();
-            }
+
         }
         
         const lapPhieuDuThi = new MH_LapPhieuDuThi();

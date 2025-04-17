@@ -3,9 +3,9 @@ const PhieuDuThiDAO = require('../dao/PhieuDuThiDAO');
 const ThiSinh_Bus = require('./ThiSinh_Bus');
 
 class PhieuDuThi_Bus {
-    static async LapPhieuDuThi(maPhieuDangKy) {
+    static async LapPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
-            const phieuDuThi = await PhieuDuThiDAO.LuuPhieuDuThi(maPhieuDangKy);
+            const phieuDuThi = await PhieuDuThiDAO.LuuPhieuDuThi(maPhieuDangKy, maThiSinh);
             return phieuDuThi;
         } catch (error) {
             console.error('Error creating exam ticket:', error);
@@ -82,13 +82,12 @@ class PhieuDuThi_Bus {
                     ts.SĐT AS SDT,
                     ts.DIACHI,
                     ts.EMAIL,
-                    ts.MAPHIEUDANGKY,
-                    pdt.MAPHIEUDUTHI,
-                    pdt.SBD,
-                    pdt.TRANGTHAI,
-                    pdt.NGAYPHATHANH
+                    ts.MAPHIEUDANGKY
                 FROM THISINH ts
-                LEFT JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM PHIEUDUTHI pdt 
+                    WHERE ts.MATHISINH = pdt.MATHISINH
+                )
                 ORDER BY ts.MATHISINH
                 OPTION (RECOMPILE)
             `;
@@ -116,15 +115,14 @@ class PhieuDuThi_Bus {
                     ts.SĐT AS SDT,
                     ts.DIACHI,
                     ts.EMAIL,
-                    ts.MAPHIEUDANGKY,
-                    pdt.MAPHIEUDUTHI,
-                    pdt.SBD,
-                    pdt.TRANGTHAI,
-                    pdt.NGAYPHATHANH
+                    ts.MAPHIEUDANGKY
                 FROM THISINH ts
-                LEFT JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
-                WHERE ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
-                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%'
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM PHIEUDUTHI pdt 
+                    WHERE ts.MATHISINH = pdt.MATHISINH
+                )
+                AND (ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
+                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%')
                 ORDER BY ts.MATHISINH
             `;
             

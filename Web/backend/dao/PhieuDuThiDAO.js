@@ -2,7 +2,7 @@ const { sql, poolPromise } = require('./DB');
 
 
 class PhieuDuThiDAO {
-    static async LuuPhieuDuThi(maPhieuDangKy) {
+    static async LuuPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
             const pool = await poolPromise;
             
@@ -25,21 +25,9 @@ class PhieuDuThiDAO {
                 throw new Error(`Registration ID ${maPhieuDangKy} not found`);
             }
             
-            const { MANHANVIEN, MAKHACHHANG } = pdkResult.recordset[0];
+            const MANHANVIEN = 'NV0000004';
             
-            const tsResult = await pool.request()
-                .input('maPhieuDangKy', sql.NVarChar, maPhieuDangKy)
-                .query(`
-                    SELECT MATHISINH
-                    FROM THISINH
-                    WHERE MAPHIEUDANGKY = @maPhieuDangKy
-                `);
-            
-            if (tsResult.recordset.length === 0) {
-                throw new Error(`No candidate found for registration ID ${maPhieuDangKy}`);
-            }
-            
-            const { MATHISINH } = tsResult.recordset[0];
+            console.log(`Using provided candidate ID: ${maThiSinh} for registration ID: ${maPhieuDangKy}`);
             
             const nextSBDResult = await pool.request().query(`
                 SELECT 'SBD' + RIGHT('000' + CAST(ISNULL(MAX(CAST(RIGHT(SBD, 3) AS INT)), 0) + 1 AS VARCHAR(3)), 3) AS NextSBD
@@ -56,7 +44,7 @@ class PhieuDuThiDAO {
                 .input('today', sql.Date, today)
                 .input('MANHANVIEN', sql.NVarChar, MANHANVIEN)
                 .input('maPhieuDangKy', sql.NVarChar, maPhieuDangKy)
-                .input('MATHISINH', sql.Int, MATHISINH)
+                .input('MATHISINH', sql.Int, maThiSinh)
                 .query(`
                     INSERT INTO PHIEUDUTHI (MAPHIEUDUTHI, SBD, TRANGTHAI, NGAYPHATHANH, MANHANVIEN, MAPHIEUDANGKY, MATHISINH)
                     VALUES (@newId, @newSBD, N'Chưa gửi', @today, @MANHANVIEN, @maPhieuDangKy, @MATHISINH)
