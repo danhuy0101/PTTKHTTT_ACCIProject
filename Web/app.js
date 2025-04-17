@@ -1,7 +1,7 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
-const { poolPromise } = require('./backend/dao/DB'); // Import database connection pool
+const { poolPromise } = require('./db'); // Import database connection pool
 const app = express();
 
 // Tạo instance handlebars với các helpers

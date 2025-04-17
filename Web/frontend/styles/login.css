@@ -1,13 +1,20 @@
+@import url("./common.css");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
 body {
-    background-color: #009dd4;
+    background-color: var(--primary-color);
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: 'Montserrat', sans-serif;
-    background-image: linear-gradient(to right, #0092c5, #00a6e0);
 }
 
 .login-container {
@@ -21,15 +28,15 @@ body {
 }
 
 h1 {
-    color: #009dd4;
+    color: var(--primary-color);
     margin-bottom: 25px;
-    font-weight: 600;
-    font-size: 35px;
+    font-weight: 700;
+    font-size: 40px;
     text-align: center;
 }
 
 .form-group {
-    margin-bottom: 1px;
+    margin-bottom: 15px;
 }
 
 input[type="text"],
@@ -47,7 +54,7 @@ input::placeholder {
 }
 
 .login-button {
-    background-color: #009dd4;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 20px;
@@ -72,7 +79,7 @@ input::placeholder {
 }
 
 .forgot-password a {
-    color: #009dd4;
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: 600;
     font-size: 13px;

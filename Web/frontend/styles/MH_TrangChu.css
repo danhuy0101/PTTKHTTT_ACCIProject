@@ -1,3 +1,5 @@
+@import url("./common.css");
+
 .welcome-container {
     width: 100%;
     min-height: 100vh;
@@ -20,12 +22,14 @@
 
 .welcome-container h1 {
     margin-top: 80px;
+    font-weight: 700;
+    font-size: 50px;
 }
 
 .welcome-message {
     font-size: 32px;
     margin-bottom: 80px;
-    color: #009dd4;
+    color: var(--primary-color);
     font-weight: 500;
 }
 
@@ -37,7 +41,7 @@
 
 .action-button {
     display: inline-block;
-    background-color: #009dd4;
+    background-color: var(--primary-color);
     color: white;
     padding: 40px 35px;
     text-decoration: none;
@@ -48,5 +52,11 @@
 }
 
 .action-button:hover {
-    background-color: #0085b3;
+    background-color: var(--primary-color-darker);
+}
+
+.action-button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }

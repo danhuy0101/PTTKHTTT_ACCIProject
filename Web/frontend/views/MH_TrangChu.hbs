@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="/styles/MH_TrangChu.css">
 
 <div class="welcome-container">
-    {{> header}}
+    {{> header showBreadcrumb="Trang chủ"}}
 
-    <h1 class="welcome-message">Xin chào nhân viên {{user.ROLE}}.</h1>
+    <h1 class="welcome-message">Xin chào, Nhân viên {{user.ROLE}}!</h1>
 
     <div class="action-buttons">
         {{#if (eq user.ROLE "Phát hành")}}
@@ -13,9 +13,14 @@
         {{/if}}
 
         {{#if (eq user.ROLE "Tiếp nhận")}}
-        <a href="/xu-ly-cap-chung-chi" class="action-button">
-            Xử lý trao chứng chỉ
-        </a>
+        <div class="action-button-container">
+            <a href="/dang-ky-du-thi" class="action-button">
+                Đăng ký dự thi
+            </a>
+            <a href="/xu-ly-cap-chung-chi" class="action-button">
+                Xử lý trao chứng chỉ
+            </a>
+        </div>
         {{/if}}
 
         {{#if (eq user.ROLE "Kế toán")}}

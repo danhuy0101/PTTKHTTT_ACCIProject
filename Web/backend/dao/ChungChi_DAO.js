@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require('../dao/DB');
+const { sql, poolPromise } = require('../../db');
 
 class ChungChi_DAO {
     static async LayDanhSachChungChi(maPhieu, maKH, loaiKH) {

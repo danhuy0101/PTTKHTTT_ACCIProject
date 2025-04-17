@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require('./DB');
+const { sql, poolPromise } = require('../../db');
 
 class ThiSinhDAO {
     static async LayDanhSachThiSinh() {

@@ -1,7 +1,7 @@
 /* ==== Cài đặt tổng thể ==== */
+
 body {
-    background-color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -11,7 +11,7 @@ body {
 
 /* ==== Thanh tiêu đề (Header) ==== */
 .header-bar {
-    background-color: #039be5;
+    background-color: var(--primary-color);
     color: white;
     display: flex;
     justify-content: space-between;
@@ -83,7 +83,7 @@ body {
 
 .form-group input:focus {
     outline: none;
-    border-color: #039be5;
+    border-color: var(--primary-color);
 }
 
 .form-submit {
@@ -92,7 +92,7 @@ body {
 
 .search-button {
     padding: 10px 24px;
-    background-color: #039be5;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 6px;
@@ -103,7 +103,7 @@ body {
 }
 
 .search-button:hover {
-    background-color: #0277bd;
+    background-color: var(--primary-color-darker);
 }
 
 /* ==== Bảng kết quả ==== */
@@ -139,7 +139,7 @@ body {
 
 .submit-button button {
     padding: 12px 28px;
-    background-color: #43a047;
+    background-color: var(--accent-color);
     color: white;
     font-weight: bold;
     font-size: 14px;
@@ -172,7 +172,7 @@ body {
   }
   
   .modal-content {
-    background-color: #fff;
+    background-color: var(--light-bg);
     padding: 30px 40px;
     border-radius: 8px;
     text-align: center;
@@ -181,13 +181,13 @@ body {
   }
   
   .modal-content h3 {
-    color: #0d6efd;
+    color: var(--primary-color);
     margin-bottom: 10px;
   }
   
   .modal-content button {
     margin-top: 15px;
-    background-color: #0d6efd;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 8px 20px;

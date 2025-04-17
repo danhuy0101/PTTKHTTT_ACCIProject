@@ -1,3 +1,5 @@
+@import url("./common.css");
+
 .ticket-container {
     width: 100%;
     min-height: 100vh;
@@ -21,7 +23,7 @@
 .page-title {
     font-size: 28px;
     margin: 30px 0;
-    color: #333;
+    color: var(--text-color);
     text-align: center;
     width: 100%;
 }
@@ -51,7 +53,7 @@
 }
 
 .search-button {
-    background-color: #009dd4;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 0 15px;
@@ -68,7 +70,7 @@
 .candidates-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: white;
+    background-color: var(--light-bg);
 }
 
 .candidates-table th {
@@ -104,7 +106,7 @@
 }
 
 .phat-hanh-btn {
-    background-color: #28a745;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     padding: 12px 25px;
