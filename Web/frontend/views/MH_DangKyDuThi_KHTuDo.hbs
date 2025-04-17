@@ -1,0 +1,106 @@
+<link rel="stylesheet" href="/styles/XuLyCapChungChi_LoaiKH.css">
+
+{{> header showBreadcrumb=true breadcrumbText="Đăng ký dự thi" breadcrumbText2="Khách hàng tự do" }}
+
+<div class="main-content">
+  <h1 class="page-title">Đăng ký dự thi - Khách hàng tự do</h1>
+
+  <form id="form-dang-ky" action="/dang-ky-du-thi/khach-hang-tu-do" method="POST">
+    <!-- Thông tin khách hàng -->
+    <section>
+      <h2>Thông tin khách hàng</h2>
+      <div class="form-group">
+        <label>Họ tên:</label>
+        <input type="text" name="khachHang.ten" required />
+        <span class="error-message" id="error-kh-ten"></span>
+      </div>
+      <div class="form-group">
+        <label>Ngày sinh:</label>
+        <input type="date" name="khachHang.ngaySinh" />
+      </div>
+      <div class="form-group">
+        <label>Địa chỉ:</label>
+        <input type="text" name="khachHang.diaChi" required />
+      </div>
+      <div class="form-group">
+        <label>Số điện thoại:</label>
+        <input type="text" name="khachHang.sdt" required />
+        <span class="error-message" id="error-kh-sdt"></span>
+      </div>
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" name="khachHang.email" required />
+        <span class="error-message" id="error-kh-email"></span>
+      </div>
+    </section>
+
+    <!-- Thông tin thí sinh -->
+    <section>
+      <h2>Thông tin thí sinh</h2>
+      <div class="form-group">
+        <label>Họ tên:</label>
+        <input type="text" name="thiSinh.ten" required />
+      </div>
+      <div class="form-group">
+        <label>Ngày sinh:</label>
+        <input type="date" name="thiSinh.ngaySinh" />
+      </div>
+      <div class="form-group">
+        <label>Địa chỉ:</label>
+        <input type="text" name="thiSinh.diaChi" required />
+      </div>
+      <div class="form-group">
+        <label>Số điện thoại:</label>
+        <input type="text" name="thiSinh.sdt" required />
+        <span class="error-message" id="error-ts-sdt"></span>
+      </div>
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" name="thiSinh.email" required />
+        <span class="error-message" id="error-ts-email"></span>
+      </div>
+    </section>
+
+    <!-- Chọn lịch thi -->
+    <section>
+      <h2>Chọn lịch thi</h2>
+      <div class="form-group">
+        <label>Mảng dự thi:</label>
+        <select id="linhVuc" name="lichThi.linhVuc" required>
+          <option value="">-- Chọn lĩnh vực --</option>
+          {{#each linhVucList}}
+            <option value="{{this.MALINHVUC}}">{{this.TENLINHVUC}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Bài thi:</label>
+        <select id="baiThi" name="lichThi.baiThi" disabled required>
+          <option value="">-- Chọn bài thi --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Lịch thi:</label>
+        <select id="lichThi" name="lichThi.maLichThi" disabled required>
+          <option value="">-- Chọn lịch thi --</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Nút hành động -->
+    <div class="action-buttons">
+      <button type="submit" class="submit-btn">Hoàn thành</button>
+      <a href="/" class="cancel-btn">Thoát</a>
+    </div>
+  </form>
+</div>
+
+<!-- Modal thành công -->
+<div id="successModal" class="modal hidden">
+  <div class="modal-content">
+    <p>Đăng ký thành công!</p>
+    <button onclick="window.location.href='/'">Đóng</button>
+  </div>
+</div>
+
+<script src="/scripts/dangKyTuDo.js"></script>

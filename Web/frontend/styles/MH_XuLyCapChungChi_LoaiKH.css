@@ -1,25 +1,5 @@
 @import url("./common.css");
 
-.header-bar {
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 64px;
-    padding: 0 24px;
-}
-
-.breadcrumb {
-    font-size: 15px;
-}
-
-.breadcrumb a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
 .header-icons i {
     margin-left: 20px;
     cursor: pointer;
@@ -65,11 +45,10 @@
 .action-button {
     background-color: var(--primary-color);
     color: white;
-    padding: 16px 32px;
+    padding: 25px 32px;
     font-size: 18px;
     font-weight: bold;
     border: none;
-    border-radius: 6px;
     width: 320px;
     cursor: pointer;
     transition: background-color 0.3s;

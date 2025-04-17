@@ -92,8 +92,8 @@ VALUES
 ('DG00000008', N'CEH (Certified Ethical Hacker)', N'Chuyên gia bảo mật', 'LV00000002', 18000000),
 ('DG00000009', N'CompTIA Security+', N'Bảo mật hệ thống', 'LV00000002', 9500000),
 ('DG00000010', N'CCNA', N'Mạng máy tính', 'LV00000002', 7000000);
-
 GO
+
 INSERT INTO KHACHHANG (MAKHACHHANG, TENKHACHHANG, NGAYSINH, DIACHI, SĐT, EMAIL, LOAIKHACHHANG)
 VALUES
 ('KH00000001', N'Trần Minh Sang', '1990-05-15', N'123 Đường ABC, Hà Nội', '0123456789', 'tms@example.com', N'Tự do'),
@@ -164,12 +164,12 @@ VALUES
 ('PGH0000010', '2025-04-11 12:40:00', N'Đơn đề nghị thay đổi nguyện vọng có chữ ký xác nhận');
 
 GO
-INSERT INTO THISINH (MATHISINH, TENTHISINH, NGAYSINH, DIACHI, SĐT, EMAIL, MAPHIEUDANGKY)
+INSERT INTO THISINH (MATHISINH, TENTHISINH, NGAYSINH, DIACHI, SĐT, EMAIL, MAPHIEUDANGKY, MALICHTHI)
 VALUES
-(10001, N'Trần Minh Sang', '1990-05-15', N'123 Đường ABC, Hà Nội', '0123456789', 'tms@example.com', 'PDK0000001'),
-(10002, N'Đỗ Bảo Quỳnh', '1995-10-20', N'555 Đường MNO, Hải Phòng', '0971122334', 'dbq@example.com', 'PDK0000002'),
-(10003, N'Trần Châu Thúy Vy', '2000-07-07', N'987 Đường STU, Nha Trang', '0988112233', 'thuyvy@example.com', 'PDK0000003'),
-(10004, N'Nguyễn Kim Quyên', '1988-02-28', N'111 Đường YZ, Đà Lạt', '0909777888', 'kimquyen@example.com', 'PDK0000004');
+(10001, N'Trần Minh Sang', '1990-05-15', N'123 Đường ABC, Hà Nội', '0123456789', 'tms@example.com', 'PDK0000001', 'LT00000001'),
+(10002, N'Đỗ Bảo Quỳnh', '1995-10-20', N'555 Đường MNO, Hải Phòng', '0971122334', 'dbq@example.com', 'PDK0000002', 'LT00000003'),
+(10003, N'Trần Châu Thúy Vy', '2000-07-07', N'987 Đường STU, Nha Trang', '0988112233', 'thuyvy@example.com', 'PDK0000003', 'LT00000001'),
+(10004, N'Nguyễn Kim Quyên', '1988-02-28', N'111 Đường YZ, Đà Lạt', '0909777888', 'kimquyen@example.com', 'PDK0000004', 'LT00000002');
 
 -- Công ty TNHH Xây dựng Thành Đạt 
 INSERT INTO THISINH (MATHISINH, TENTHISINH, NGAYSINH, DIACHI, SĐT, EMAIL, MAPHIEUDANGKY)

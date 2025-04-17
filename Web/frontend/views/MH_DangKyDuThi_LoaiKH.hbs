@@ -1,3 +1,14 @@
-<h1>Chọn loại khách hàng</h1>
-<a href="/dang-ky-du-thi/khach-hang-tu-do" class="btn">Khách hàng tự do</a>
-<a href="/dang-ky-du-thi/khach-hang-don-vi" class="btn">Khách hàng đơn vị</a>
+<link rel="stylesheet" href="/styles/MH_XuLyCapChungChi_LoaiKH.css">
+
+{{> header showBreadcrumb=true breadcrumbText="Đăng ký dự thi" }}
+
+<div class="main-content">
+    <h1 class="page-title">Đăng ký dự thi</h1>
+    <p class="page-subtitle">Chọn đối tượng đăng ký dự thi</p>
+
+    <div class="button-container">
+        <form action="/dang-ky-du-thi/khach-hang-tu-do" method="get">
+            <button class="action-button">Khách hàng tự do</button>
+        </form>
+    </div>
+</div>
