@@ -82,13 +82,12 @@ class PhieuDuThi_Bus {
                     ts.SĐT AS SDT,
                     ts.DIACHI,
                     ts.EMAIL,
-                    ts.MAPHIEUDANGKY,
-                    pdt.MAPHIEUDUTHI,
-                    pdt.SBD,
-                    pdt.TRANGTHAI,
-                    pdt.NGAYPHATHANH
+                    ts.MAPHIEUDANGKY
                 FROM THISINH ts
-                LEFT JOIN PHIEUDUTHI pdt ON ts.MATHISINH = pdt.MATHISINH
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM PHIEUDUTHI pdt 
+                    WHERE ts.MATHISINH = pdt.MATHISINH
+                )
                 ORDER BY ts.MATHISINH
                 OPTION (RECOMPILE)
             `;

@@ -53,7 +53,8 @@
         <div class="action-container">
             <button type="button" id="btnChonTatCa" class="btn-select-all">Chọn tất cả</button>
             <form action="/cap-nhat-trang-thai" method="POST" id="phatHanhForm">
-                <input type="hidden" name="maPhieuDuThi" id="maPhieuDuThiInput">
+                <input type="hidden" name="maphieudangky" id="maPhieuDangKyInput">
+                <input type="hidden" name="mathisinh" id="maThiSinhInput">
                 <button type="button" id="btnPhatHanh" class="phat-hanh-btn">
                     <i class="fa-solid fa-print"></i> Phát hành
                 </button>
@@ -108,8 +109,11 @@
                 row.classList.add('selected');
                 this.selectedRow = row;
                 
-                const maphieudangky = row.cells[6].textContent;
-                document.getElementById('maPhieuDuThiInput').value = maphieudangky;
+                const mathisinh = row.cells[0].textContent.trim();
+                const maphieudangky = row.cells[6].textContent.trim();
+                
+                document.getElementById('maThiSinhInput').value = mathisinh;
+                document.getElementById('maPhieuDangKyInput').value = maphieudangky;
                 
                 document.getElementById('btnPhatHanh').disabled = false;
             }
@@ -145,11 +149,13 @@
                 if (this.selectedRow) {
                     if (confirm('Bạn có chắc chắn muốn phát hành phiếu dự thi này?')) {
                         console.log('Issuing ticket...');
-                        
+                        const mathisinh = this.selectedRow.cells[0].textContent.trim();
                         const maphieudangky = this.selectedRow.cells[6].textContent.trim();
+                        console.log('Mã thí sinh:', mathisinh);
                         console.log('Mã phiếu đăng ký:', maphieudangky);
                         
-                        document.getElementById('maPhieuDuThiInput').value = maphieudangky;
+                        document.getElementById('maThiSinhInput').value = mathisinh;
+                        document.getElementById('maPhieuDangKyInput').value = maphieudangky;
 
                         const form = document.getElementById('phatHanhForm');
                         
@@ -158,7 +164,7 @@
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
                             },
-                            body: `maphieudangky=${encodeURIComponent(maphieudangky)}`
+                            body: `mathisinh=${encodeURIComponent(mathisinh)}&maphieudangky=${encodeURIComponent(maphieudangky)}`
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -218,8 +224,10 @@
                     firstRow.classList.add('selected');
                     this.selectedRow = firstRow;
                     
-                    const maphieuduthi = firstRow.cells[6].textContent;
-                    document.getElementById('maPhieuDuThiInput').value = maphieuduthi;
+                    const mathisinh = firstRow.cells[0].textContent.trim();
+                    const maphieudangky = firstRow.cells[6].textContent.trim();
+                    document.getElementById('maThiSinhInput').value = mathisinh;
+                    document.getElementById('maPhieuDangKyInput').value = maphieudangky;
                     
                     document.getElementById('btnPhatHanh').disabled = false;
                 }
