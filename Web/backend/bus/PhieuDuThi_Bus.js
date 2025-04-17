@@ -3,9 +3,9 @@ const PhieuDuThiDAO = require('../dao/PhieuDuThiDAO');
 const ThiSinh_Bus = require('./ThiSinh_Bus');
 
 class PhieuDuThi_Bus {
-    static async LapPhieuDuThi(maPhieuDangKy) {
+    static async LapPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
-            const phieuDuThi = await PhieuDuThiDAO.LuuPhieuDuThi(maPhieuDangKy);
+            const phieuDuThi = await PhieuDuThiDAO.LuuPhieuDuThi(maPhieuDangKy, maThiSinh);
             return phieuDuThi;
         } catch (error) {
             console.error('Error creating exam ticket:', error);

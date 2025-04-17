@@ -132,7 +132,7 @@ router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), asy
     }
     
     // Create and issue an exam ticket based on both registration ID and candidate ID
-    const result = await PhieuDuThi_Bus.LapPhieuDuThi(maphieudangky);
+    const result = await PhieuDuThi_Bus.LapPhieuDuThi(maphieudangky, parseInt(mathisinh));
     if (result) {
       // Update the status of the newly created ticket
       const updateResult = await PhieuDuThi_Bus.CapNhatTrangThai(result.MAPHIEUDUTHI, 'Đã gửi');
