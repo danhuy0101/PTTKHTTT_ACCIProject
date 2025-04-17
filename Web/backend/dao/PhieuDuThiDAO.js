@@ -25,9 +25,8 @@ class PhieuDuThiDAO {
                 throw new Error(`Registration ID ${maPhieuDangKy} not found`);
             }
             
-            const { MANHANVIEN, MAKHACHHANG } = pdkResult.recordset[0];
+            const MANHANVIEN = 'NV0000004';
             
-            // Instead of looking up the candidate ID, we're using the one provided from the frontend
             console.log(`Using provided candidate ID: ${maThiSinh} for registration ID: ${maPhieuDangKy}`);
             
             const nextSBDResult = await pool.request().query(`
