@@ -72,7 +72,6 @@ class PhieuDuThi_Bus {
 
     static async layDanhSachPhieuDuThi() {
         try {
-            // Using ThiSinh_Bus to get the list of candidates without exam tickets
             const danhSachThiSinh = await ThiSinh_Bus.LayDanhSachThiSinhChuaCoPhieuDuThi();
             return danhSachThiSinh;
         } catch (error) {
@@ -83,7 +82,6 @@ class PhieuDuThi_Bus {
 
     static async timKiem(searchQuery) {
         try {
-            // Using ThiSinh_Bus to search for candidates without exam tickets
             const ketQuaTimKiem = await ThiSinh_Bus.TimKiemThiSinhChuaCoPhieuDuThi(searchQuery);
             return ketQuaTimKiem;
         } catch (error) {
