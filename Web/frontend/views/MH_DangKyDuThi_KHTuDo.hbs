@@ -103,4 +103,58 @@
   </div>
 </div>
 
-<script src="/scripts/dangKyTuDo.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const linhVucSelect = document.getElementById("linhVuc");
+    const baiThiSelect = document.getElementById("baiThi");
+    const lichThiSelect = document.getElementById("lichThi");
+
+    linhVucSelect.addEventListener("change", async () => {
+      const maLinhVuc = linhVucSelect.value;
+      baiThiSelect.innerHTML = `<option value="">-- Chọn bài thi --</option>`;
+      lichThiSelect.innerHTML = `<option value="">-- Chọn lịch thi --</option>`;
+      lichThiSelect.disabled = true;
+
+      if (maLinhVuc) {
+        try {
+          const res = await fetch(`/api/bai-thi/${maLinhVuc}`);
+          const data = await res.json();
+          data.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.MADANHGIA;
+            option.textContent = item.TENDANHGIA;
+            baiThiSelect.appendChild(option);
+          });
+          baiThiSelect.disabled = false;
+        } catch (err) {
+          console.error("Lỗi load bài thi:", err);
+        }
+      } else {
+        baiThiSelect.disabled = true;
+      }
+    });
+
+    baiThiSelect.addEventListener("change", async () => {
+      const maDanhGia = baiThiSelect.value;
+      lichThiSelect.innerHTML = `<option value="">-- Chọn lịch thi --</option>`;
+
+      if (maDanhGia) {
+        try {
+          const res = await fetch(`/api/lich-thi/${maDanhGia}`);
+          const data = await res.json();
+          data.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.MALICHTHI;
+            option.textContent = item.THOIGIAN;
+            lichThiSelect.appendChild(option);
+          });
+          lichThiSelect.disabled = false;
+        } catch (err) {
+          console.error("Lỗi load lịch thi:", err);
+        }
+      } else {
+        lichThiSelect.disabled = true;
+      }
+    });
+  });
+</script>

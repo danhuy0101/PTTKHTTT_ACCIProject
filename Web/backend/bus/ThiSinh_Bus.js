@@ -1,5 +1,5 @@
 const { sql, poolPromise } = require('../../db');
-const ThiSinhDAO = require('../dao/ThiSinhDAO');
+const ThiSinhDAO = require('../dao/ThiSinh_DAO');
 
 class ThiSinh_Bus {
     static async LayDanhSachThiSinhChoPhieuDuThi() {
@@ -97,6 +97,8 @@ class ThiSinh_Bus {
             throw error;
         }
     }
+
+    
 }
 
 module.exports = ThiSinh_Bus;

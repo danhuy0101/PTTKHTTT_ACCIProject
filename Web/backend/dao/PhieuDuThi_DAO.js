@@ -91,8 +91,6 @@ class PhieuDuThiDAO {
         } catch (error) {
             console.error('Database error updating exam ticket status:', error);
             throw error;
-        } finally {
-            sql.close();
         }
     }
 
@@ -137,8 +135,6 @@ class PhieuDuThiDAO {
         } catch (error) {
             console.error('Database error finding exam ticket:', error);
             throw error;
-        } finally {
-            sql.close();
         }
     }
 }

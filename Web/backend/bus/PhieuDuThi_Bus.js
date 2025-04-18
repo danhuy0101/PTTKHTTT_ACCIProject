@@ -1,5 +1,5 @@
 const { sql, poolPromise } = require('../../db');
-const PhieuDuThiDAO = require('../dao/PhieuDuThiDAO');
+const PhieuDuThiDAO = require('../dao/PhieuDuThi_DAO');
 const ThiSinh_Bus = require('./ThiSinh_Bus');
 
 class PhieuDuThi_Bus {

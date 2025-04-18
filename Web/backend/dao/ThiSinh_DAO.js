@@ -22,8 +22,6 @@ class ThiSinhDAO {
         } catch (error) {
             console.error('Database error getting candidates:', error);
             throw error;
-        } finally {
-            sql.close();
         }
     }
 
@@ -54,8 +52,6 @@ class ThiSinhDAO {
         } catch (error) {
             console.error('Database error finding candidate:', error);
             throw error;
-        } finally {
-            sql.close();
         }
     }
 }
