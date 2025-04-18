@@ -1,56 +1,80 @@
 const { sql, poolPromise } = require('../../db');
 
 class ThiSinhDAO {
-    static async LayDanhSachThiSinh() {
+    // Không có phương thức nào vì các phương thức trước đây đã được chuyển sang PhieuDuThi_DAO
+
+    /**
+     * Lấy danh sách thí sinh chưa có phiếu dự thi
+     * @returns {Array} Danh sách thí sinh chưa có phiếu
+     */
+    static async layDanhSachThiSinhChuaCoPhieuDuThi() {
         try {
             const pool = await poolPromise;
             
-            const result = await pool.request().query(`
+            const query = `
                 SELECT 
-                    MATHISINH,
-                    TENTHISINH,
-                    NGAYSINH,
-                    SĐT AS SDT,
-                    DIACHI,
-                    EMAIL,
-                    MAPHIEUDANGKY
-                FROM THISINH
-                ORDER BY MATHISINH
-            `);
+                    ts.MATHISINH,
+                    ts.TENTHISINH,
+                    ts.NGAYSINH,
+                    ts.SĐT AS SDT,
+                    ts.DIACHI,
+                    ts.EMAIL,
+                    ts.MAPHIEUDANGKY
+                FROM THISINH ts
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM PHIEUDUTHI pdt 
+                    WHERE ts.MATHISINH = pdt.MATHISINH
+                )
+                ORDER BY ts.MATHISINH
+                OPTION (RECOMPILE)
+            `;
             
-            return result.recordset;
+            const request = pool.request();
+            request.enableArithAbort = true;
+            
+            const { recordset } = await request.query(query);
+            return recordset;
         } catch (error) {
-            console.error('Database error getting candidates:', error);
+            console.error('Lỗi cơ sở dữ liệu khi lấy danh sách thí sinh chưa có phiếu dự thi:', error);
             throw error;
         }
     }
 
-    static async TimThiSinh(maThiSinh) {
+    /**
+     * Tìm kiếm thí sinh chưa có phiếu dự thi theo tên hoặc mã
+     * @param {string} tuKhoa - Từ khóa tìm kiếm
+     * @returns {Array} Danh sách thí sinh phù hợp
+     */
+    static async timKiemThiSinhChuaCoPhieuDuThi(tuKhoa) {
         try {
             const pool = await poolPromise;
             
-            const result = await pool.request()
-                .input('maThiSinh', sql.Int, maThiSinh)
-                .query(`
-                    SELECT 
-                        MATHISINH,
-                        TENTHISINH,
-                        NGAYSINH,
-                        SĐT AS SDT,
-                        DIACHI,
-                        EMAIL,
-                        MAPHIEUDANGKY
-                    FROM THISINH
-                    WHERE MATHISINH = @maThiSinh
-                `);
+            const query = `
+                SELECT 
+                    ts.MATHISINH,
+                    ts.TENTHISINH,
+                    ts.NGAYSINH,
+                    ts.SĐT AS SDT,
+                    ts.DIACHI,
+                    ts.EMAIL,
+                    ts.MAPHIEUDANGKY
+                FROM THISINH ts
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM PHIEUDUTHI pdt 
+                    WHERE ts.MATHISINH = pdt.MATHISINH
+                )
+                AND (ts.TENTHISINH LIKE N'%' + @tuKhoa + N'%'
+                OR ts.MATHISINH LIKE N'%' + @tuKhoa + N'%')
+                ORDER BY ts.MATHISINH
+            `;
             
-            if (result.recordset.length > 0) {
-                return result.recordset[0];
-            }
+            const { recordset } = await pool.request()
+                .input('tuKhoa', sql.NVarChar, tuKhoa)
+                .query(query);
             
-            return null;
+            return recordset;
         } catch (error) {
-            console.error('Database error finding candidate:', error);
+            console.error('Lỗi cơ sở dữ liệu khi tìm kiếm thí sinh chưa có phiếu dự thi:', error);
             throw error;
         }
     }
