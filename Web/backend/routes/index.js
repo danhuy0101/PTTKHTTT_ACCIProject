@@ -1,12 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const session = require('express-session');
+const { isAuthenticated, hasRole } = require("./middleware");
 const AuthBUS = require("../bus/AuthBUS");
-const PhieuDuThi_Bus = require("../bus/PhieuDuThi_Bus");
-const ThiSinh_Bus = require("../bus/ThiSinh_Bus");
-const TrangChu_Bus = require("../bus/TrangChu_Bus");
-const ChungChi_Bus = require('../bus/ChungChi_Bus');
-
 
 // Set up session middleware
 router.use(session({
@@ -15,27 +11,6 @@ router.use(session({
   saveUninitialized: true,
   cookie: { secure: false } // set to true if using https
 }));
-
-// Middleware to check if user is authenticated
-const isAuthenticated = (req, res, next) => {
-  if (req.session.user) {
-    return next();
-  }
-  res.redirect('/');
-};
-
-// Middleware to check if user has specific role
-const hasRole = (role) => {
-  return (req, res, next) => {
-    if (req.session.user && req.session.user.ROLE === role) {
-      return next();
-    }
-    res.status(403).render('error', { 
-      message: 'Bạn không có quyền truy cập trang này',
-      layout: 'login'
-    });
-  };
-};
 
 // Route for login page (now the entry point)
 router.get("/", (req, res) => {
@@ -80,78 +55,6 @@ router.get("/welcome", isAuthenticated, (req, res) => {
   });
 });
 
-// Exam tickets page - only for "Phát hành" role (MH_LapPhieuDuThi)
-router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
-  try {
-    const danhSachPhieu = await PhieuDuThi_Bus.layDanhSachPhieuDuThi();
-    res.render('MH_LapPhieuDuThi', { 
-      danhSachPhieu,
-      user: req.session.user
-    });
-  } catch (error) {
-    console.error('Error fetching exam tickets:', error);
-    res.render('error', { 
-      message: 'Không thể lấy danh sách phiếu dự thi',
-      error: error
-    });
-  }
-});
-
-// Search candidates
-router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
-  try {
-    const { searchQuery } = req.body;
-    const danhSachPhieu = await PhieuDuThi_Bus.timKiem(searchQuery);
-    
-    res.render('MH_LapPhieuDuThi', { 
-      danhSachPhieu,
-      searchQuery: searchQuery,
-      user: req.session.user
-    });
-  } catch (error) {
-    console.error('Search error:', error);
-    res.render('error', { 
-      message: 'Lỗi tìm kiếm thí sinh',
-      error: error
-    });
-  }
-});
-
-// Update ticket status
-router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
-  try {
-    const { maphieudangky, mathisinh } = req.body;
-    console.log('Mã thí sinh nhận được:', mathisinh);
-    console.log('Mã phiếu đăng ký nhận được:', maphieudangky);
-    
-    if (!maphieudangky || !mathisinh) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Thiếu thông tin cần thiết để phát hành phiếu dự thi' 
-      });
-    }
-    
-    // Create and issue an exam ticket based on both registration ID and candidate ID
-    const result = await PhieuDuThi_Bus.LapPhieuDuThi(maphieudangky, parseInt(mathisinh));
-    if (result) {
-      // Update the status of the newly created ticket
-      const updateResult = await PhieuDuThi_Bus.CapNhatTrangThai(result.MAPHIEUDUTHI, 'Đã gửi');
-      return res.status(updateResult.success ? 200 : 400).json(updateResult);
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Không thể tạo phiếu dự thi'
-      });
-    }
-  } catch (error) {
-    console.error('Update status error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Lỗi cập nhật trạng thái phiếu dự thi' 
-    });
-  }
-});
-
 // Logout route
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -167,113 +70,9 @@ router.get("/contact-admin", (req, res) => {
   res.render("contact-admin", { layout: 'login' });
 });
 
-// Trang chọn loại khách hàng (Xử lý cấp chứng chỉ) – dành cho Tiếp nhận
-router.get("/xu-ly-cap-chung-chi", isAuthenticated, hasRole("Tiếp nhận"), (req, res) => {
-  res.render("MH_XuLyCapChungChi_LoaiKH", {
-    user: req.session.user,
-    layout: "main"
-  });
-});
-
-
-// Tự do
-router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
-  const { maPhieu, maKH } = req.query;
-  let danhSach = [];
-  let hasResult = false;
-  let isSearched = false;
-
-  try {
-    if (maPhieu || maKH) {
-      isSearched = true;
-      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, 'Tự do');
-      hasResult = danhSach.length > 0;
-    }
-
-    res.render('MH_XuLyTraoChungChi_KHTuDo', {
-      layout: 'main',
-      user: req.session.user,
-      danhSach,
-      hasResult,
-      isSearched,
-      maPhieu,
-      maKH
-    });
-  } catch (err) {
-    console.error('❌ Lỗi tìm kiếm chứng chỉ:', err);
-    res.render('MH_XuLyTraoChungChi_KHTuDo', {
-      layout: 'main',
-      user: req.session.user,
-      danhSach: [],
-      hasResult: false,
-      isSearched: true,
-      maPhieu,
-      maKH,
-      error: "Lỗi khi tìm kiếm chứng chỉ!"
-    });
-  }
-});
-
-// Đơn vị
-router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
-  const { maPhieu, maKH } = req.query;
-  let danhSach = [];
-  let isSearched = false;
-  let hasResult = false;
-
-  try {
-    if (maPhieu || maKH) {
-      isSearched = true;
-      danhSach = await ChungChi_Bus.LayDanhSachChungChi(maPhieu, maKH, 'Đơn vị');
-      hasResult = danhSach.length > 0;
-    }
-
-    res.render('MH_XuLyTraoChungChi_KHDonVi', {
-      layout: 'main',
-      user: req.session.user,
-      danhSach,
-      maPhieu,
-      maKH,
-      isSearched,
-      hasResult
-    });
-  } catch (err) {
-    console.error('❌ Lỗi KH đơn vị:', err);
-    res.render('MH_XuLyTraoChungChi_KHDonVi', {
-      layout: 'main',
-      user: req.session.user,
-      danhSach: [],
-      isSearched: true,
-      hasResult: false,
-      maPhieu,
-      maKH
-    });
-  }
-});
-
-// Trang chọn loại khách hàng (Đăng ký dự thi) – dành cho Tiếp nhận
-router.get("/dang-ky-du-thi", isAuthenticated, hasRole("Tiếp nhận"), (req, res) => {
-  res.render("MH_DangKyDuThi_LoaiKH", {
-    user: req.session.user,
-    layout: "main"
-  });
-});
-
-// Khách hàng tự do
-router.get("/dang-ky-du-thi/khach-hang-tu-do", isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
-  try {
-    res.render("MH_DangKyDuThi_KHTuDo", {
-      user: req.session.user,
-      layout: "main"
-    });
-  } catch (error) {
-    console.error("Lỗi truy cập trang KH tự do:", error);
-    res.render("error", {
-      layout: "login",
-      message: "Không thể truy cập trang đăng ký dự thi - KH tự do."
-    });
-  }
-});
-
+// Include pages
+router.use('/', require('./PhatHanhPhieuDuThi'));
+router.use('/', require('./XuLyCapChungChi'));
+router.use('/', require('./DangKyDuThi'));
 
 module.exports = router;
