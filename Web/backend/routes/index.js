@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const session = require('express-session');
-const { isAuthenticated, hasRole } = require("./middleware");
+const { isAuthenticated, hasRole } = require("../middleware/auth");
 const AuthBUS = require("../bus/AuthBUS");
 
 // Set up session middleware

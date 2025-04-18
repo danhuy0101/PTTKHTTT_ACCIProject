@@ -1,11 +1,11 @@
-<link rel="stylesheet" href="/styles/XuLyCapChungChi_LoaiKH.css">
+<link rel="stylesheet" href="/styles/MH_DangKyDuThi_KHTuDo.css">
 
 {{> header showBreadcrumb=true breadcrumbText="Đăng ký dự thi" breadcrumbText2="Khách hàng tự do" }}
 
 <div class="main-content">
   <h1 class="page-title">Đăng ký dự thi - Khách hàng tự do</h1>
 
-  <form id="form-dang-ky" action="/dang-ky-du-thi/khach-hang-tu-do" method="POST">
+  <form id="form-dang-ky" action="/dang-ky-du-thi/khach-hang-tu-do/luu-thong-tin" method="POST">
     <!-- Thông tin khách hàng -->
     <section>
       <h2>Thông tin khách hàng</h2>
@@ -40,6 +40,7 @@
       <div class="form-group">
         <label>Họ tên:</label>
         <input type="text" name="thiSinh.ten" required />
+        <span class="error-message" id="error-ts-ten"></span>
       </div>
       <div class="form-group">
         <label>Ngày sinh:</label>
@@ -90,19 +91,34 @@
     <!-- Nút hành động -->
     <div class="action-buttons">
       <button type="submit" class="submit-btn">Hoàn thành</button>
-      <a href="/" class="cancel-btn">Thoát</a>
+      <a href="/welcome" class="cancel-btn">Thoát</a>
     </div>
   </form>
 </div>
 
-<!-- Modal thành công -->
+<!-- Modal -->
 <div id="successModal" class="modal hidden">
   <div class="modal-content">
     <p>Đăng ký thành công!</p>
-    <button onclick="window.location.href='/'">Đóng</button>
+    <a href="/welcome" class="modal-close-btn">Đóng</a>
   </div>
 </div>
+<script>
+  function openModal() {
+    document.getElementById("successModal").classList.remove("hidden");
+    document.getElementById("successModal").classList.add("visible");
+  }
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    if (success === 'true') {
+      openModal();
+    }
+  };
+</script>
 
+{{! Validate }}
+<script src="/validator.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const linhVucSelect = document.getElementById("linhVuc");
@@ -119,13 +135,18 @@
         try {
           const res = await fetch(`/api/bai-thi/${maLinhVuc}`);
           const data = await res.json();
-          data.forEach(item => {
-            const option = document.createElement("option");
-            option.value = item.MADANHGIA;
-            option.textContent = item.TENDANHGIA;
-            baiThiSelect.appendChild(option);
-          });
-          baiThiSelect.disabled = false;
+          if (data.length === 0) {
+            baiThiSelect.innerHTML = `<option value="">Không có bài thi</option>`;
+            baiThiSelect.disabled = true;
+          } else {
+            data.forEach(item => {
+              const option = document.createElement("option");
+              option.value = item.MADANHGIA;
+              option.textContent = item.TENDANHGIA;
+              baiThiSelect.appendChild(option);
+            });
+            baiThiSelect.disabled = false;
+          }
         } catch (err) {
           console.error("Lỗi load bài thi:", err);
         }
@@ -142,13 +163,18 @@
         try {
           const res = await fetch(`/api/lich-thi/${maDanhGia}`);
           const data = await res.json();
-          data.forEach(item => {
-            const option = document.createElement("option");
-            option.value = item.MALICHTHI;
-            option.textContent = item.THOIGIAN;
-            lichThiSelect.appendChild(option);
-          });
-          lichThiSelect.disabled = false;
+          if (data.length === 0) {
+            lichThiSelect.innerHTML = `<option value="">Không có lịch thi</option>`;
+            lichThiSelect.disabled = true;
+          } else {
+            data.forEach(item => {
+              const option = document.createElement("option");
+              option.value = item.MALICHTHI;
+              option.textContent = item.THOIGIAN;
+              lichThiSelect.appendChild(option);
+            });
+            lichThiSelect.disabled = false;
+          }
         } catch (err) {
           console.error("Lỗi load lịch thi:", err);
         }
@@ -156,5 +182,43 @@
         lichThiSelect.disabled = true;
       }
     });
+  });
+
+  document.getElementById("form-dang-ky").addEventListener("submit", function(e) {
+    let valid = true;
+
+    // KH
+    const khTen = document.querySelector('input[name="khachHang.ten"]');
+    const khEmail = document.querySelector('input[name="khachHang.email"]');
+    const khSdt = document.querySelector('input[name="khachHang.sdt"]');
+    const errKhTen = document.getElementById("error-kh-ten");
+    const errKhEmail = document.getElementById("error-kh-email");
+    const errKhSdt = document.getElementById("error-kh-sdt");
+
+    const tenKhMsg = validateName(khTen.value);
+    const emailKhMsg = validateEmail(khEmail.value);
+    const sdtKhMsg = validatePhone(khSdt.value);
+
+    if (tenKhMsg) { errKhTen.textContent = tenKhMsg; valid = false; } else errKhTen.textContent = "";
+    if (emailKhMsg) { errKhEmail.textContent = emailKhMsg; valid = false; } else errKhEmail.textContent = "";
+    if (sdtKhMsg) { errKhSdt.textContent = sdtKhMsg; valid = false; } else errKhSdt.textContent = "";
+
+    // TS
+    const tsTen = document.querySelector('input[name="thiSinh.ten"]');
+    const tsEmail = document.querySelector('input[name="thiSinh.email"]');
+    const tsSdt = document.querySelector('input[name="thiSinh.sdt"]');
+    const errTsTen = document.getElementById("error-ts-ten");
+    const errTsEmail = document.getElementById("error-ts-email");
+    const errTsSdt = document.getElementById("error-ts-sdt");
+
+    const tenTsMsg = validateName(tsTen.value);
+    const emailTsMsg = validateEmail(tsEmail.value);
+    const sdtTsMsg = validatePhone(tsSdt.value);
+
+    if (tenTsMsg) { errTsTen.textContent = tenTsMsg; valid = false; } else errTsTen.textContent = "";
+    if (emailTsMsg) { errTsEmail.textContent = emailTsMsg; valid = false; } else errTsEmail.textContent = "";
+    if (sdtTsMsg) { errTsSdt.textContent = sdtTsMsg; valid = false; } else errTsSdt.textContent = "";
+
+    if (!valid) e.preventDefault();
   });
 </script>

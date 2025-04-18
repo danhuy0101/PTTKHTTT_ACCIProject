@@ -98,7 +98,14 @@ class ThiSinh_Bus {
         }
     }
 
+    static async LayMaThiSinhLonNhat() {
+        return await ThiSinhDAO.LayMaThiSinhLonNhat();
+    }
     
+    async ThemThiSinh(data) {
+        const thiSinhDAO = new ThiSinhDAO(); // Create an instance
+        return await thiSinhDAO.ThemThiSinh(data);
+    }
 }
 
 module.exports = ThiSinh_Bus;

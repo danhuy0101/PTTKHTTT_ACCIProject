@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const PhieuDuThi_Bus = require("../bus/PhieuDuThi_Bus");
-const { isAuthenticated, hasRole } = require("./middleware");
+const { isAuthenticated, hasRole } = require("../middleware/auth");
 
 // Exam tickets page - only for "Phát hành" role (MH_LapPhieuDuThi)
 router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), async (req, res) => {

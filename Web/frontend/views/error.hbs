@@ -1,10 +1,12 @@
 <div class="error-container">
-    <h1>Lỗi</h1>
     <div class="error-message">
-        <p>{{message}}</p>
-        {{#if error}}
-        <p>{{error}}</p>
-        {{/if}}
+        <div class="main-error">
+            <p class="error-text">Lỗi!</p>
+            <p class="error-paragraph">{{message}}</p>
+            {{#if error}}
+            <p>{{error}}</p>
+            {{/if}}
+        </div>
+        <a href="/welcome" class="btn-back">Quay lại trang chủ</a>
     </div>
-    <a href="/" class="btn-back">Quay lại trang đăng nhập</a>
 </div>

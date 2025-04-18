@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ChungChi_Bus = require('../bus/ChungChi_Bus');
-const { isAuthenticated, hasRole } = require("./middleware");
+const { isAuthenticated, hasRole } = require("../middleware/auth");
 
 // Trang chọn loại khách hàng (Xử lý cấp chứng chỉ) – dành cho Tiếp nhận
 router.get("/xu-ly-cap-chung-chi", isAuthenticated, hasRole("Tiếp nhận"), (req, res) => {

@@ -1,4 +1,4 @@
-/* ==== Cài đặt tổng thể ==== */
+@import url("./common.css");
 
 body {
     background-color: var(--light-bg);
