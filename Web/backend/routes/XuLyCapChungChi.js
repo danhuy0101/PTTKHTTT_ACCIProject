@@ -50,6 +50,7 @@ router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), as
   }
 });
 
+
 // Đơn vị
 router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
   const { maPhieu, maKH } = req.query;
@@ -86,5 +87,17 @@ router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), a
     });
   }
 });
+
+router.post('/cap-chung-chi/xac-nhan-trao', isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
+  try {
+    const { danhSachMaChungChi } = req.body;
+    const result = await ChungChi_Bus.CapNhatTrangThaiChungChi(danhSachMaChungChi);
+    res.json(result); 
+  } catch (err) {
+    console.error("❌ Lỗi xác nhận trao:", err);
+    res.status(500).json({ success: false, message: "Lỗi server khi xác nhận chứng chỉ!" });
+  }
+});
+
 
 module.exports = router;
