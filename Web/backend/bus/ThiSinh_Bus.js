@@ -1,8 +1,6 @@
 const ThiSinhDAO = require('../dao/ThiSinh_DAO');
 
 class ThiSinh_Bus {
-    // Lớp này hiện không còn xử lý nghiệp vụ nào, 
-    // vì chức năng đã được chuyển sang PhieuDuThi_Bus
 
     /**
      * Lấy danh sách thí sinh chưa có phiếu dự thi

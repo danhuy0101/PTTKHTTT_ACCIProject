@@ -1,7 +1,6 @@
 const { sql, poolPromise } = require('../../db');
 
 class ThiSinhDAO {
-    // Không có phương thức nào vì các phương thức trước đây đã được chuyển sang PhieuDuThi_DAO
 
     /**
      * Lấy danh sách thí sinh chưa có phiếu dự thi
