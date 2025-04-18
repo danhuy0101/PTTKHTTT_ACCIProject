@@ -1,32 +1,35 @@
 const { sql, poolPromise } = require('../../db');
 const PhieuDuThiDAO = require('../dao/PhieuDuThi_DAO');
-const ThiSinh_Bus = require('./ThiSinh_Bus');
 
 class PhieuDuThi_Bus {
-    static async LapPhieuDuThi(maPhieuDangKy, maThiSinh) {
+    /**
+     * Lập phiếu dự thi mới
+     * @param {string} maPhieuDangKy - Mã phiếu đăng ký
+     * @param {number} maThiSinh - Mã thí sinh
+     * @returns {Object} Thông tin phiếu dự thi vừa tạo
+     */
+    static async lapPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
-            const phieuDuThi = await PhieuDuThiDAO.LuuPhieuDuThi(maPhieuDangKy, maThiSinh);
+            const phieuDuThi = await PhieuDuThiDAO.taoPhieuDuThi(maPhieuDangKy, maThiSinh);
             return phieuDuThi;
         } catch (error) {
-            console.error('Error creating exam ticket:', error);
+            console.error('Lỗi khi tạo phiếu dự thi:', error);
             throw error;
         }
     }
 
-    static async CapNhatTrangThai(maPhieuDuThi, trangThai) {
+    /**
+     * Cập nhật trạng thái phiếu dự thi
+     * @param {string} maPhieuDuThi - Mã phiếu dự thi
+     * @param {string} trangThai - Trạng thái mới (mặc định 'Đã gửi' nếu là phát hành)
+     * @returns {Object} Kết quả cập nhật
+     */
+    static async capNhatTrangThai(maPhieuDuThi, trangThai = 'Đã gửi') {
         try {
-            const pool = await poolPromise;
-            const checkQuery = `
-                SELECT TRANGTHAI FROM PHIEUDUTHI 
-                WHERE MAPHIEUDUTHI = @maPhieuDuThi
-            `;
-            
-            const result = await pool.request()
-                .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
-                .query(checkQuery);
+            const kiemTraKetQua = await PhieuDuThiDAO.kiemTraTrangThai(maPhieuDuThi);
                 
-            if (result.recordset.length > 0) {
-                const currentStatus = result.recordset[0].TRANGTHAI;
+            if (kiemTraKetQua.found) {
+                const currentStatus = kiemTraKetQua.status;
                 
                 if (currentStatus === 'Đã gửi') {
                     return { 
@@ -35,10 +38,10 @@ class PhieuDuThi_Bus {
                     };
                 }
                 
-                await PhieuDuThiDAO.CapNhatTrangThai(maPhieuDuThi, trangThai);
+                await PhieuDuThiDAO.capNhatTrangThai(maPhieuDuThi, trangThai);
                 
                 if (trangThai === 'Đã gửi') {
-                    await this.GuiMail(maPhieuDuThi);
+                    await this.guiThongBaoEmail(maPhieuDuThi);
                 }
                 
                 return { 
@@ -52,49 +55,25 @@ class PhieuDuThi_Bus {
                 };
             }
         } catch (error) {
-            console.error('Error updating exam ticket status:', error);
+            console.error('Lỗi khi cập nhật trạng thái phiếu dự thi:', error);
             throw error;
         }
     }
 
-    static async GuiMail(maPhieuDuThi) {
+    /**
+     * Gửi email thông báo
+     * @param {string} maPhieuDuThi - Mã phiếu dự thi
+     * @returns {Object} Kết quả gửi email
+     */
+    static async guiThongBaoEmail(maPhieuDuThi) {
         try {
-            const phieuDuThi = await PhieuDuThiDAO.TimPhieuDuThi(maPhieuDuThi);
-            
-            console.log(`Sending email notification for exam ticket ${maPhieuDuThi}`);
+            const phieuDuThi = await PhieuDuThiDAO.timPhieuDuThiTheoMa(maPhieuDuThi);
+            // Xử lý logic gửi email
+            await PhieuDuThiDAO.guiThongBaoEmail(maPhieuDuThi);
             
             return { success: true };
         } catch (error) {
-            console.error('Error sending email:', error);
-            throw error;
-        }
-    }
-
-    static async layDanhSachPhieuDuThi() {
-        try {
-            const danhSachThiSinh = await ThiSinh_Bus.LayDanhSachThiSinhChuaCoPhieuDuThi();
-            return danhSachThiSinh;
-        } catch (error) {
-            console.error('Error getting exam tickets:', error);
-            throw error;
-        }
-    }
-
-    static async timKiem(searchQuery) {
-        try {
-            const ketQuaTimKiem = await ThiSinh_Bus.TimKiemThiSinhChuaCoPhieuDuThi(searchQuery);
-            return ketQuaTimKiem;
-        } catch (error) {
-            console.error('Error searching candidates:', error);
-            throw error;
-        }
-    }
-
-    static async capNhatTrangThaiPhieuDuThi(maPhieuDuThi) {
-        try {
-            return await this.CapNhatTrangThai(maPhieuDuThi, 'Đã gửi');
-        } catch (error) {
-            console.error('Error updating exam ticket status:', error);
+            console.error('Lỗi khi gửi email thông báo:', error);
             throw error;
         }
     }

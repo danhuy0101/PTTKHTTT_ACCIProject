@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const PhieuDuThi_Bus = require("../bus/PhieuDuThi_Bus");
-const { isAuthenticated, hasRole } = require("../middleware/auth");
+const ThiSinh_Bus = require("../bus/ThiSinh_Bus");
+const { isAuthenticated, hasRole } = require("./middleware");
 
 // Exam tickets page - only for "Phát hành" role (MH_LapPhieuDuThi)
 router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
-    const danhSachPhieu = await PhieuDuThi_Bus.layDanhSachPhieuDuThi();
+    const danhSachPhieu = await ThiSinh_Bus.layDanhSachThiSinhChuaCoPhieuDuThi();
     res.render('MH_LapPhieuDuThi', { 
       danhSachPhieu,
       user: req.session.user
     });
   } catch (error) {
-    console.error('Error fetching exam tickets:', error);
+    console.error('Lỗi khi lấy danh sách phiếu dự thi:', error);
     res.render('error', { 
       message: 'Không thể lấy danh sách phiếu dự thi',
       error: error
@@ -24,7 +25,7 @@ router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), a
 router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
     const { searchQuery } = req.body;
-    const danhSachPhieu = await PhieuDuThi_Bus.timKiem(searchQuery);
+    const danhSachPhieu = await ThiSinh_Bus.timKiemThiSinhChuaCoPhieuDuThi(searchQuery);
     
     res.render('MH_LapPhieuDuThi', { 
       danhSachPhieu,
@@ -32,7 +33,7 @@ router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async
       user: req.session.user
     });
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('Lỗi tìm kiếm:', error);
     res.render('error', { 
       message: 'Lỗi tìm kiếm thí sinh',
       error: error
@@ -55,10 +56,10 @@ router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), asy
     }
     
     // Create and issue an exam ticket based on both registration ID and candidate ID
-    const result = await PhieuDuThi_Bus.LapPhieuDuThi(maphieudangky, parseInt(mathisinh));
+    const result = await PhieuDuThi_Bus.lapPhieuDuThi(maphieudangky, parseInt(mathisinh));
     if (result) {
       // Update the status of the newly created ticket
-      const updateResult = await PhieuDuThi_Bus.CapNhatTrangThai(result.MAPHIEUDUTHI, 'Đã gửi');
+      const updateResult = await PhieuDuThi_Bus.capNhatTrangThai(result.MAPHIEUDUTHI);
       return res.status(updateResult.success ? 200 : 400).json(updateResult);
     } else {
       return res.status(400).json({
@@ -67,7 +68,7 @@ router.post("/cap-nhat-trang-thai", isAuthenticated, hasRole("Phát hành"), asy
       });
     }
   } catch (error) {
-    console.error('Update status error:', error);
+    console.error('Lỗi cập nhật trạng thái:', error);
     return res.status(500).json({ 
       success: false, 
       message: 'Lỗi cập nhật trạng thái phiếu dự thi' 
