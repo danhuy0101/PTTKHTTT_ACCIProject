@@ -45,6 +45,7 @@ class ChungChi_DAO {
             }
 
             const result = await request.query(query);
+            console.log("✅ Số chứng chỉ tìm được:", result.recordset.length);
             return result.recordset;
         } catch (err) {
             console.error("❌ Lỗi DAO:", err);
@@ -67,12 +68,13 @@ class ChungChi_DAO {
 
             const updateQuery = `
                 UPDATE CHUNGCHI
-                SET TrangThai = N'Đã nhận'
+                SET TrangThai = N'Đã nhận',
+                    NgayCap = GETDATE()
                 WHERE MaChungChi IN (${escapedIds})
             `;
 
             await request.query(updateQuery);
-            return { success: true, message: 'Đã cập nhật trạng thái' };
+            return { success: true, message: 'Đã cập nhật trạng thái và ngày cấp' };
         } catch (err) {
             console.error("❌ Lỗi CapNhatTrangThaiChungChi:", err);
             return { success: false, message: 'Lỗi khi cập nhật: ' + err.message };
