@@ -75,5 +75,6 @@ router.use('/', require('./PhatHanhPhieuDuThi'));
 router.use('/', require('./XuLyCapChungChi'));
 router.use('/', require('./DangKyDuThi'));
 router.use('/', require('./LapPhieuGiaHan'));
+router.use('/', require('./LapThanhToanGiaHan'));
 
 module.exports = router;

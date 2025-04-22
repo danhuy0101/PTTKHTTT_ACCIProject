@@ -55,6 +55,46 @@ class GiaHanDAO {
             throw error;
         }
     }
+
+    static async layDanhSachPhieuGiaHan() {
+        try {
+            const pool = await poolPromise;
+            const result = await pool.request().query(`
+            SELECT 
+                MAPHIEUGIAHAN,
+                PHIGIAHAN,
+                TRUONGHOPGIAHAN
+            FROM PHIEUGIAHAN
+            WHERE TRUONGHOPGIAHAN = N'Không đặc biệt'
+            `);
+            return result.recordset;
+        } catch (error) {
+            console.error("Lỗi khi lấy danh sách phiếu gia hạn:", error);
+            throw error;
+        }
+    }
+
+    static async timKiemPhieuGiaHan(tuKhoa) {
+        try {
+            const pool = await poolPromise;
+            const result = await pool.request()
+            .input('tuKhoa', sql.NVarChar, `%${tuKhoa}%`)
+            .query(`
+                SELECT 
+                MAPHIEUGIAHAN,
+                PHIGIAHAN,
+                TRUONGHOPGIAHAN
+                FROM PHIEUGIAHAN
+                WHERE TRUONGHOPGIAHAN = N'Không đặc biệt'
+                AND
+                MAPHIEUGIAHAN LIKE @tuKhoa
+            `);
+            return result.recordset;
+        } catch (error) {
+            console.error("Lỗi khi tìm kiếm phiếu đăng ký:", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = GiaHanDAO;

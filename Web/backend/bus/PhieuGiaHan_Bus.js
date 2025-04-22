@@ -39,6 +39,24 @@ class GiaHanBUS {
             throw error;
         }
     }
+
+    static async layDanhSachPhieuGiaHan() {
+        try {
+            return await GiaHanDAO.layDanhSachPhieuGiaHan();
+        } catch (error) {
+            console.error("BUS - Lỗi khi lấy danh sách phiếu gia hạn:", error);
+            throw error;
+        }
+    }
+
+    static async timKiemPhieuGiaHan(tuKhoa) {
+        try {
+            return await GiaHanDAO.timKiemPhieuGiaHan(tuKhoa);
+        } catch (error) {
+            console.error("BUS - Lỗi khi tìm kiếm phiếu gia hạn:", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = GiaHanBUS;
