@@ -74,5 +74,6 @@ router.get("/contact-admin", (req, res) => {
 router.use('/', require('./PhatHanhPhieuDuThi'));
 router.use('/', require('./XuLyCapChungChi'));
 router.use('/', require('./DangKyDuThi'));
+router.use('/', require('./LapPhieuGiaHan'));
 
 module.exports = router;
