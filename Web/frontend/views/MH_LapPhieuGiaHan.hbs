@@ -1,0 +1,169 @@
+<link rel="stylesheet" href="/styles/MH_LapPhieuGiaHan.css">
+
+<div class="extension-container">
+  {{> header showBreadcrumb=true breadcrumbText="Lập phiếu gia hạn"}}
+
+  <div class="content-wrapper">
+    <h1 class="page-title">Lập phiếu gia hạn</h1>
+
+    <div class="search-section">
+      <form action="/tim-kiem-phieu-dang-ky" method="POST" class="search-form">
+        <input type="text" name="tuKhoa" placeholder="Nhập mã hoặc tên thí sinh" value="{{tuKhoa}}" class="search-input">
+        <button type="submit" class="search-button">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
+
+    <div class="table-container">
+      <table class="candidates-table">
+        <thead>
+          <tr>
+            <th>Mã thí sinh</th>
+            <th>Tên thí sinh</th>
+            <th>Ngày sinh</th>
+            <th>Mã phiếu đăng ký</th>
+            <th>Ngày thi</th>
+            <th>Trình độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each danhSachPhieuDangKy}}
+          <tr>
+            <td>{{this.MATHISINH}}</td>
+            <td>{{this.TENTHISINH}}</td>
+            <td>{{formatDate this.NGAYSINH}}</td>
+            <td>{{this.MAPHIEUDANGKY}}</td>
+            <td>{{formatDate this.NGAYTHI}}</td>
+            <td>{{this.TRINHDO}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-extension">
+      <h2>Thông tin gia hạn</h2>
+      <form id="formGiaHan">
+        <input type="hidden" name="maPhieuDangKy" id="maPhieuDangKyInput">
+        <input type="hidden" name="maThiSinh" id="maThiSinhInput">
+
+        <div class="form-group">
+          <label for="truongHop">Hình thức gia hạn:</label>
+          <select name="truongHop" id="truongHop" required>
+            <option value="">-- Chọn --</option>
+            <option value="Đặc biệt">Đặc biệt</option>
+            <option value="Không đặc biệt">Không đặc biệt</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ngayGiaHan">Ngày gia hạn:</label>
+          <input type="date" name="ngayGiaHan" id="ngayGiaHan" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phiGiaHan">Phí gia hạn (VNĐ):</label>
+          <input type="number" name="phiGiaHan" id="phiGiaHan" required>
+        </div>
+
+        <div class="form-group" id="lyDoSection" style="display: none;">
+          <label for="lyDoGiaHan">Lý do gia hạn:</label>
+          <textarea name="lyDoGiaHan" id="lyDoGiaHan" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn-create" id="btnLapPhieuGiaHan">
+          <i class="fa-solid fa-file-circle-plus"></i> Lập phiếu gia hạn
+        </button>
+      </form>
+
+      <div id="thongBaoKetQua" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    class MH_LapPhieuGiaHan {
+      constructor() {
+        this.selectedRow = null;
+        this.init();
+      }
+
+      init() {
+        this.handleRowSelection();
+        this.handleTruongHopChange();
+        this.handleFormSubmit();
+      }
+
+      handleRowSelection() {
+        const rows = document.querySelectorAll(".candidates-table tbody tr");
+        rows.forEach(row => {
+          row.addEventListener("click", () => {
+            if (this.selectedRow) {
+              this.selectedRow.classList.remove("selected");
+            }
+            row.classList.add("selected");
+            this.selectedRow = row;
+
+            document.getElementById("maThiSinhInput").value = row.cells[0].textContent.trim();
+            document.getElementById("maPhieuDangKyInput").value = row.cells[3].textContent.trim();
+            console.log(document.getElementById("maPhieuDangKyInput").value)
+          });
+        });
+      }
+
+      handleTruongHopChange() {
+        const select = document.getElementById("truongHop");
+        const lyDoSection = document.getElementById("lyDoSection");
+
+        select.addEventListener("change", function () {
+          if (this.value === "Đặc biệt") {
+            lyDoSection.style.display = "block";
+            document.getElementById("lyDoGiaHan").setAttribute("required", "required");
+          } else {
+            lyDoSection.style.display = "none";
+            document.getElementById("lyDoGiaHan").removeAttribute("required");
+          }
+        });
+      }
+
+      handleFormSubmit() {
+        const form = document.getElementById("formGiaHan");
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(form);
+          const data = Object.fromEntries(formData.entries());
+
+          try {
+            const res = await fetch("/lap-phieu-gia-han", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            const tb = document.getElementById("thongBaoKetQua");
+
+            if (result.success) {
+              tb.innerHTML = `<p style="color:green">${result.message}</p>`;
+              form.reset();
+              document.getElementById("lyDoSection").style.display = "none";
+              if (this.selectedRow) this.selectedRow.classList.remove("selected");
+              this.selectedRow = null;
+            } else {
+              tb.innerHTML = `<p style="color:red">${result.message}</p>`;
+            }
+
+          } catch (error) {
+            console.error("Lỗi gửi yêu cầu:", error);
+            document.getElementById("thongBaoKetQua").innerHTML = `<p style="color:red">Lỗi kết nối đến máy chủ</p>`;
+          }
+        });
+      }
+    }
+
+    new MH_LapPhieuGiaHan();
+  });
+</script>
