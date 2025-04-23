@@ -24,9 +24,17 @@
         {{/if}}
 
         {{#if (eq user.ROLE "Kế toán")}}
-        <a href="/quan-ly-thanh-toan" class="action-button">
-            Quản lý thanh toán
-        </a>
+        <div class="action-button-container">
+            <a href="/quan-ly-thanh-toan" class="action-button">
+                Quản lý thanh toán
+            </a>
+            <a href="/lap-phieu-gia-han" class="action-button">
+                Lập phiếu gia hạn
+            </a>
+            <a href="/lap-thanh-toan-gia-han" class="action-button">
+                Lập thanh toán gia hạn
+            </a>
+        </div>
         {{/if}}
 
         {{#if (eq user.ROLE "Nhập liệu")}}
