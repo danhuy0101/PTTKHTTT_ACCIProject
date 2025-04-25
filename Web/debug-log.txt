@@ -1,15 +1,15 @@
 {
   "khachHang.ten": "Ha Ha",
-  "khachHang.ngaySinh": "2025-04-24",
-  "khachHang.diaChi": "sddss",
-  "khachHang.sdt": "0705434443",
+  "khachHang.ngaySinh": "2025-04-10",
+  "khachHang.diaChi": "sdffdssfd",
+  "khachHang.sdt": "0907465827",
   "khachHang.email": "dsds@gmail.com",
   "thiSinh.ten": "Ha Ha",
-  "thiSinh.ngaySinh": "2025-04-30",
-  "thiSinh.diaChi": "fghhggf",
+  "thiSinh.ngaySinh": "2025-04-10",
+  "thiSinh.diaChi": "sdffdssfd",
   "thiSinh.sdt": "0907465827",
   "thiSinh.email": "dsds@gmail.com",
   "lichThi.linhVuc": "LV00000001",
-  "lichThi.baiThi": "DG00000004",
-  "lichThi.maLichThi": "LT00000004"
+  "lichThi.baiThi": "DG00000001",
+  "lichThi.maLichThi": "LT00000001"
 }

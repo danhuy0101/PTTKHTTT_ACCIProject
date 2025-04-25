@@ -16,26 +16,26 @@ router.get("/dang-ky-du-thi", isAuthenticated, hasRole("Tiếp nhận"), (req, r
       user: req.session.user,
       layout: "main"
     });
-  });
+});
   
-  // Khách hàng tự do
-  router.get("/dang-ky-du-thi/khach-hang-tu-do", isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
-    try {
-      const linhVucList = await LinhVuc_Bus.LayDanhSachLinhVuc();
-  
-      res.render("MH_DangKyDuThi_KHTuDo", {
-        user: req.session.user,
-        layout: "main",
-        linhVucList
-      });
-    } catch (error) {
-      console.error("Lỗi truy cập trang KH tự do:", error);
-      res.render("error", {
-        layout: "login",
-        message: "Không thể truy cập trang đăng ký dự thi - KH tự do."
-      });
-    }
-  });
+// Khách hàng tự do
+router.get("/dang-ky-du-thi/khach-hang-tu-do", isAuthenticated, hasRole("Tiếp nhận"), async (req, res) => {
+  try {
+    const linhVucList = await LinhVuc_Bus.LayDanhSachLinhVuc();
+
+    res.render("MH_DangKyDuThi_KHTuDo", {
+      user: req.session.user,
+      layout: "main",
+      linhVucList
+    });
+  } catch (error) {
+    console.error("Lỗi truy cập trang KH tự do:", error);
+    res.render("error", {
+      layout: "login",
+      message: "Không thể truy cập trang đăng ký dự thi - KH tự do."
+    });
+  }
+});
 
 // API lấy danh sách bài thi theo MALINHVUC
 router.get("/api/bai-thi/:maLinhVuc", async (req, res) => {
@@ -94,6 +94,7 @@ router.post('/dang-ky-du-thi/khach-hang-tu-do/luu-thong-tin', async (req, res) =
       EMAIL: req.body['thiSinh.email'],
       MAPHIEUDANGKY: null,
       MALICHTHI: req.body['lichThi.maLichThi'],
+      MAKHACHHANG: newMaKH,
     });
 
     // 5. Trả lại modal thành công

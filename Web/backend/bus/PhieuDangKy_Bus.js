@@ -18,6 +18,8 @@ class PhieuDangKyBUS {
       throw error;
     }
   }
+
+  
 }
 
 module.exports = PhieuDangKyBUS;
