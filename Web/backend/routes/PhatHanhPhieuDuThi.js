@@ -13,9 +13,9 @@ router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), a
       user: req.session.user
     });
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách phiếu dự thi:', error);
+    console.error('Lỗi khi lấy danh sách thí sinh chưa có phiếu dự thi:', error);
     res.render('error', { 
-      message: 'Không thể lấy danh sách phiếu dự thi',
+      message: 'Không thể lấy danh sách',
       error: error
     });
   }
