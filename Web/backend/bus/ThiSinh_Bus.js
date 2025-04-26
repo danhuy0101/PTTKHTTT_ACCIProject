@@ -29,40 +29,6 @@ class ThiSinh_Bus {
         }
     }
 
-    static async TimKiemThiSinhChuaCoPhieuDuThi(searchQuery) {
-        try {
-            const pool = await poolPromise;
-            
-            const query = `
-                SELECT 
-                    ts.MATHISINH,
-                    ts.TENTHISINH,
-                    ts.NGAYSINH,
-                    ts.SĐT AS SDT,
-                    ts.DIACHI,
-                    ts.EMAIL,
-                    ts.MAPHIEUDANGKY
-                FROM THISINH ts
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM PHIEUDUTHI pdt 
-                    WHERE ts.MATHISINH = pdt.MATHISINH
-                )
-                AND (ts.TENTHISINH LIKE N'%' + @searchQuery + N'%'
-                OR ts.MATHISINH LIKE N'%' + @searchQuery + N'%')
-                ORDER BY ts.MATHISINH
-            `;
-            
-            const { recordset } = await pool.request()
-                .input('searchQuery', sql.NVarChar, searchQuery)
-                .query(query);
-            
-            return recordset;
-        } catch (error) {
-            console.error('Error searching candidates without exam tickets:', error);
-            throw error;
-        }
-    }
-
     static async LayMaThiSinhLonNhat() {
         return await ThiSinhDAO.LayMaThiSinhLonNhat();
     }
