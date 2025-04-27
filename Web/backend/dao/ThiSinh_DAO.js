@@ -92,7 +92,7 @@ class ThiSinhDAO {
           DIACHI,
           SĐT,
           EMAIL,
-          MALICHTHI
+          MAPHIEUDANGKY
         } = ts;
       
         const pool = await poolPromise;
@@ -104,12 +104,12 @@ class ThiSinhDAO {
           .input('DIACHI', sql.NVarChar(100), DIACHI)
           .input('SĐT', sql.Char(10), SĐT)
           .input('EMAIL', sql.VarChar(100), EMAIL)
-          .input('MALICHTHI', sql.VarChar(10), MALICHTHI)
+          .input('MAPDK', sql.Char(10), MAPHIEUDANGKY)
           .query(`
             INSERT INTO THISINH (
-              MATHISINH, TENTHISINH, NGAYSINH, DIACHI, SĐT, EMAIL, MAPHIEUDANGKY, MALICHTHI
+              MATHISINH, TENTHISINH, NGAYSINH, DIACHI, SĐT, EMAIL, MAPHIEUDANGKY
             ) VALUES (
-              @MATS, @TENTS, @NGAYSINH, @DIACHI, @SĐT, @EMAIL, NULL, @MALICHTHI
+              @MATS, @TENTS, @NGAYSINH, @DIACHI, @SĐT, @EMAIL, @MAPDK
             )
           `);
       }

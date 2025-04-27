@@ -47,6 +47,38 @@ class PhieuDangKyDAO {
       throw error;
     }
   }
+
+  static async LayMaPhieuDangKyLonNhat() {
+    const pool = await poolPromise;
+    const result = await pool.request().query(`SELECT MAX(MAPHIEUDANGKY) AS MAX FROM PHIEUDANGKY`);
+    return result.recordset[0].MAX || 'PDK0000000';
+  }
+
+  async ThemPhieuDangKy(pdk) {
+    const {
+      MAPHIEUDANGKY,
+      NGAYDANGKY,
+      MAKHACHHANG,
+      MALICHTHI,
+      MANHANVIEN
+    } = pdk;
+  
+    const pool = await poolPromise;
+  
+    await pool.request()
+      .input('MAPDK', sql.Char(10), MAPHIEUDANGKY)
+      .input('NGAYDK', sql.DateTime, NGAYDANGKY)
+      .input('MAKH', sql.Char(10), MAKHACHHANG)
+      .input('MALT', sql.Char(10), MALICHTHI)
+      .input('MANV', sql.Char(10), MANHANVIEN)
+      .query(`
+        INSERT INTO PHIEUDANGKY (
+          MAPHIEUDANGKY, NGAYDANGKY, MAKHACHHANG, MALICHTHI, MANHANVIEN
+        ) VALUES (
+          @MAPDK, @NGAYDK, @MAKH, @MALT, @MANV
+        )
+      `);
+  }
 }
 
 module.exports = PhieuDangKyDAO;

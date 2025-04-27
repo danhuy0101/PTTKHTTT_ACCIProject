@@ -1,4 +1,5 @@
 const { sql, poolPromise } = require('../../db');
+const transporter = require('../utils/emailConfig');
 
 
 class PhieuDuThiDAO {
@@ -37,9 +38,9 @@ class PhieuDuThiDAO {
             
             console.log(`Sử dụng mã thí sinh: ${maThiSinh} cho phiếu đăng ký: ${maPhieuDangKy}`);
             
-            // Tạo số báo danh tự động
+            // Tạo số báo danh tự động dưới dạng "0xxxxx"
             const nextSBDResult = await pool.request().query(`
-                SELECT 'SBD' + RIGHT('000' + CAST(ISNULL(MAX(CAST(RIGHT(SBD, 3) AS INT)), 0) + 1 AS VARCHAR(3)), 3) AS NextSBD
+                SELECT RIGHT('000000' + CAST(ISNULL(MAX(CAST(SBD AS INT)), 0) + 1 AS VARCHAR(6)), 6) AS NextSBD
                 FROM PHIEUDUTHI
             `);
             
@@ -118,12 +119,81 @@ class PhieuDuThiDAO {
      */
     static async guiThongBaoEmail(maPhieuDuThi) {
         try {
-            console.log(`Đang gửi email thông báo cho phiếu dự thi ${maPhieuDuThi}`);
+            // Lấy thông tin thí sinh
+            console.log(`Bắt đầu gửi email cho phiếu dự thi: ${maPhieuDuThi}`);
+            const phieuDuThi = await this.timPhieuDuThiTheoMa(maPhieuDuThi);
             
-            return { success: true };
+            if (!phieuDuThi) {
+                throw new Error(`Không tìm thấy phiếu dự thi ${maPhieuDuThi}`);
+            }
+            
+            console.log('Thông tin phiếu dự thi:', JSON.stringify(phieuDuThi, null, 2));
+            
+            const { EMAIL, TENTHISINH, SBD, NGAYPHATHANH, NGAYTHI, GIOTHI_STR, TENPHONG, VITRIPHONG } = phieuDuThi;
+            
+            if (!EMAIL) {
+                throw new Error(`Thí sinh không có địa chỉ email`);
+            }
+            
+            console.log(`Chuẩn bị gửi email đến: ${EMAIL}`);
+            
+            // Định dạng ngày thi và giờ thi
+            const ngayThiFormatted = NGAYTHI ? new Date(NGAYTHI).toLocaleDateString('vi-VN') : 'Chưa xác định';
+            // Sử dụng chuỗi giờ thi đã được định dạng từ SQL Server
+            const gioThiFormatted = GIOTHI_STR || 'Chưa xác định';
+            
+            const tenPhongFormatted = TENPHONG || 'Chưa xác định';
+            const vitriPhongFormatted = VITRIPHONG || 'Chưa xác định';
+            
+            // Cấu hình nội dung email
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: EMAIL,
+                subject: 'Thông báo phiếu dự thi',
+                html: `
+                    <h2>Thông báo phiếu dự thi</h2>
+                    <p>Kính gửi ${TENTHISINH},</p>
+                    <p>Trung tâm Ngoại ngữ và Tin học ACCI xin thông báo phiếu dự thi của bạn đã được phát hành.</p>
+                    <p><strong>Thông tin phiếu dự thi:</strong></p>
+                    <ul>
+                        <li>Mã phiếu dự thi: ${maPhieuDuThi}</li>
+                        <li>Số báo danh: ${SBD}</li>
+                        <li>Ngày phát hành: ${NGAYPHATHANH ? new Date(NGAYPHATHANH).toLocaleDateString('vi-VN') : 'Chưa xác định'}</li>
+                    </ul>
+                    <p><strong>Thông tin kỳ thi:</strong></p>
+                    <ul>
+                        <li>Ngày thi: ${ngayThiFormatted}</li>
+                        <li>Giờ thi: ${gioThiFormatted}</li>
+                        <li>Phòng thi: ${tenPhongFormatted}</li>
+                        <li>Vị trí phòng: ${vitriPhongFormatted}</li>
+                    </ul>
+                    <p>Vui lòng mang theo giấy tờ tùy thân khi tham gia kỳ thi.</p>
+                    <p>Trân trọng,</p>
+                    <p>Trung tâm ngoại ngữ</p>
+                `
+            };
+            
+            console.log('Mail options:', JSON.stringify(mailOptions, null, 2));
+            console.log('Thông tin người gửi:', process.env.EMAIL_USER);
+            
+            // Gửi email
+            try {
+                await transporter.sendMail(mailOptions);
+                console.log('Email đã được gửi thành công');
+            } catch (emailError) {
+                console.error('Lỗi khi gửi email:', emailError);
+                throw new Error(`Lỗi gửi email: ${emailError.message}`);
+            }
+            
+            // Cập nhật trạng thái phiếu dự thi
+            await this.capNhatTrangThai(maPhieuDuThi, 'Đã gửi');
+            
+            console.log(`Đã gửi email thông báo cho phiếu dự thi ${maPhieuDuThi} đến ${EMAIL}`);
+            
+            return { success: true, message: `Đã gửi email thông báo đến ${EMAIL}` };
         } catch (error) {
-            console.error('Lỗi khi gửi email:', error);
-            throw error;
+            console.error('Lỗi chi tiết:', error);
+            return { success: false, error: error.message };
         }
     }
 
@@ -148,9 +218,15 @@ class PhieuDuThiDAO {
                         p.MAPHIEUDANGKY,
                         p.MATHISINH,
                         t.TENTHISINH,
-                        t.EMAIL
+                        t.EMAIL,
+                        l.NGAYTHI,
+                        CONVERT(VARCHAR(8), l.GIOTHI, 108) AS GIOTHI_STR,
+                        ph.TENPHONG,
+                        ph.VITRIPHONG
                     FROM PHIEUDUTHI p
                     JOIN THISINH t ON p.MATHISINH = t.MATHISINH
+                    JOIN LICHTHI l ON t.MALICHTHI = l.MALICHTHI
+                    JOIN PHONGTHI ph ON l.MAPHONG = ph.MAPHONG
                     WHERE p.MAPHIEUDUTHI = @maPhieuDuThi
                 `);
             

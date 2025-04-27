@@ -2,7 +2,7 @@ const KhachHang_DAO = require('../dao/KhachHang_DAO');
 
 class KhachHang_Bus {
     static async LayMaKhachHangLonNhat() {
-        return await KhachHang_DAO.LayMaKhachHangLonNhat(); // 'KH00000010'
+        return await KhachHang_DAO.LayMaKhachHangLonNhat();
     }
     
     static TaoMaKhachHangLonNhat(currentCode) {
@@ -13,7 +13,7 @@ class KhachHang_Bus {
     async ThemKhachHang(data) {
         const khachHangDAO = new KhachHang_DAO();
         return await khachHangDAO.ThemKhachHang(data);
-      }
+    }
 }
 
 module.exports = KhachHang_Bus;

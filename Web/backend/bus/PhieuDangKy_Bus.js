@@ -18,6 +18,20 @@ class PhieuDangKyBUS {
       throw error;
     }
   }
+
+  static async LayMaPhieuDangKyLonNhat() {
+    return await PhieuDangKyDAO.LayMaPhieuDangKyLonNhat();
+  }
+
+  static TaoMaPhieuDangKyLonNhat(currentCode) {
+    const num = parseInt(currentCode.slice(3)) + 1;
+    return 'PDK' + num.toString().padStart(7, '0');
+  }
+  
+  async ThemPhieuDangKy(data) {
+    const PhieuDangKy_DAO = new PhieuDangKyDAO();
+    return await PhieuDangKy_DAO.ThemPhieuDangKy(data);
+  }
 }
 
 module.exports = PhieuDangKyBUS;
