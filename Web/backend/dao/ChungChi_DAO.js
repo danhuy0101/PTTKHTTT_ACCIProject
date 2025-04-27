@@ -9,8 +9,6 @@ class ChungChi_DAO {
                 SELECT 
                     cc.MaChungChi,
                     pd.MaPhieuDuThi,
-                    pdk.MaPhieuDangKy,
-                    kh.MaKhachHang,
                     kh.TenKhachHang,
                     ld.TENDANHGIA AS TenDanhGia,
                     ts.TENTHISINH AS HoTen,
