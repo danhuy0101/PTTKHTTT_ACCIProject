@@ -93,6 +93,7 @@ router.post('/dang-ky-du-thi/khach-hang-tu-do/luu-thong-tin', async (req, res) =
       MAKHACHHANG: newMaKH,
       MALICHTHI: req.body['lichThi.maLichThi'],
       MANHANVIEN: currentNV,
+      TRANGTHAIHOADON: 'Chưa lập',
     })
 
     // 5. Tạo mã thí sinh
