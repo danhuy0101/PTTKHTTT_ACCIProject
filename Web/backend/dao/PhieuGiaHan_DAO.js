@@ -61,11 +61,13 @@ class GiaHanDAO {
             const pool = await poolPromise;
             const result = await pool.request().query(`
             SELECT 
-                MAPHIEUGIAHAN,
-                PHIGIAHAN,
-                TRUONGHOPGIAHAN
-            FROM PHIEUGIAHAN
-            WHERE TRUONGHOPGIAHAN = N'Không đặc biệt'
+                PGH.MAPHIEUGIAHAN,
+                PGH.PHIGIAHAN,
+                PGH.TRUONGHOPGIAHAN,
+                TTPGH.TRANGTHAI
+            FROM PHIEUGIAHAN PGH
+            LEFT JOIN THANHTOANPHIEUGIAHAN TTPGH ON TTPGH.MAPHIEUGIAHAN = PGH.MAPHIEUGIAHAN
+            WHERE PGH.TRUONGHOPGIAHAN = N'Không đặc biệt'
             `);
             return result.recordset;
         } catch (error) {
@@ -78,16 +80,18 @@ class GiaHanDAO {
         try {
             const pool = await poolPromise;
             const result = await pool.request()
-            .input('tuKhoa', sql.NVarChar, `%${tuKhoa}%`)
-            .query(`
+                .input('tuKhoa', sql.NVarChar, `%${tuKhoa}%`)
+                .query(`
                 SELECT 
-                MAPHIEUGIAHAN,
-                PHIGIAHAN,
-                TRUONGHOPGIAHAN
-                FROM PHIEUGIAHAN
-                WHERE TRUONGHOPGIAHAN = N'Không đặc biệt'
+                    PGH.MAPHIEUGIAHAN,
+                    PGH.PHIGIAHAN,
+                    PGH.TRUONGHOPGIAHAN,
+                    TTPGH.TRANGTHAI
+                FROM PHIEUGIAHAN PGH
+                LEFT JOIN THANHTOANPHIEUGIAHAN TTPGH ON TTPGH.MAPHIEUGIAHAN = PGH.MAPHIEUGIAHAN
+                WHERE PGH.TRUONGHOPGIAHAN = N'Không đặc biệt'
                 AND
-                MAPHIEUGIAHAN LIKE @tuKhoa
+                PGH.MAPHIEUGIAHAN LIKE @tuKhoa
             `);
             return result.recordset;
         } catch (error) {

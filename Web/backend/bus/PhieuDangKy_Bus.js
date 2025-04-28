@@ -32,6 +32,15 @@ class PhieuDangKyBUS {
     const PhieuDangKy_DAO = new PhieuDangKyDAO();
     return await PhieuDangKy_DAO.ThemPhieuDangKy(data);
   }
+
+  static async capNhatTrangThaiGiaHan(maPhieuDangKy) {
+    try {
+      return await PhieuDangKyDAO.capNhatTrangThaiGiaHan(maPhieuDangKy);
+    } catch (error) {
+      console.error("BUS - Lỗi khi thay đổi trạng thái gia hạn phiếu đăng ký:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = PhieuDangKyBUS;

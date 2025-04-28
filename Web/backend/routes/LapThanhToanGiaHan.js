@@ -72,5 +72,22 @@ router.post('/tim-kiem-phieu-gia-han', isAuthenticated, hasRole("Kế toán"), a
   }
 });
 
+// API lấy danh sách phiếu gia hạn dưới dạng JSON
+router.get("/api/phieu-gia-han", isAuthenticated, hasRole("Kế toán"), async (req, res) => {
+  try {
+    const danhSachPhieuGiaHan = await GiaHanBUS.layDanhSachPhieuGiaHan();
+    res.status(200).json({
+      success: true,
+      data: danhSachPhieuGiaHan,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách phiếu gia hạn:", error);
+    res.status(500).json({
+      success: false,
+      message: "Không thể tải danh sách phiếu gia hạn",
+    });
+  }
+});
+
 
 module.exports = router;
