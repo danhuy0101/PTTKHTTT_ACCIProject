@@ -3,7 +3,7 @@ const LichThi_DAO = require('../dao/LichThi_DAO');
 
 class LichThi_Bus {
     static async LayDanhSachLichThiKhaDung_KHTuDo(MaDanhGia) {
-        const danhSach = await LichThi_DAO.LayDanhSachLichThiKhaDung();
+        const danhSach = await LichThi_DAO.LayDanhSachLichThi();
 
         const now = new Date();
 

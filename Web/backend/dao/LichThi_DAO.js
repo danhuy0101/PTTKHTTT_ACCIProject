@@ -1,7 +1,7 @@
 const { sql, poolPromise } = require('../../db');
 
 class LichThiDAO {
-    static async LayDanhSachLichThiKhaDung() {
+    static async LayDanhSachLichThi() {
         try {
             const pool = await poolPromise;
 
