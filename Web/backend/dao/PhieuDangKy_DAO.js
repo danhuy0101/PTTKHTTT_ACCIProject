@@ -10,7 +10,7 @@ class PhieuDangKyDAO {
           KH.TENKHACHHANG,
           LT.MALICHTHI,
           LT.NGAYTHI,
-          KH.SĐT
+          PDK.TRANGTHAIGIAHAN
         FROM PHIEUDANGKY PDK
         JOIN LICHTHI LT ON PDK.MALICHTHI = LT.MALICHTHI
         JOIN KHACHHANG KH ON PDK.MAKHACHHANG = KH.MAKHACHHANG
@@ -33,13 +33,14 @@ class PhieuDangKyDAO {
             KH.TENKHACHHANG,
             LT.MALICHTHI,
             LT.NGAYTHI,
-            KH.SĐT
+            PDK.TRANGTHAIGIAHAN
           FROM PHIEUDANGKY PDK
           JOIN LICHTHI LT ON PDK.MALICHTHI = LT.MALICHTHI
           JOIN KHACHHANG KH ON PDK.MAKHACHHANG = KH.MAKHACHHANG
           WHERE 
           PDK.MAPHIEUDANGKY LIKE @tuKhoa OR
-          KH.TENKHACHHANG LIKE @tuKhoa
+          KH.TENKHACHHANG LIKE @tuKhoa or
+          LT.MALICHTHI LIKE @tuKhoa
         `);
       return result.recordset;
     } catch (error) {
@@ -63,9 +64,9 @@ class PhieuDangKyDAO {
       MANHANVIEN,
       TRANGTHAIHOADON
     } = pdk;
-  
+
     const pool = await poolPromise;
-  
+
     await pool.request()
       .input('MAPDK', sql.Char(10), MAPHIEUDANGKY)
       .input('NGAYDK', sql.DateTime, NGAYDANGKY)
@@ -81,6 +82,45 @@ class PhieuDangKyDAO {
         )
       `);
   }
+
+  static async capNhatTrangThaiGiaHan(maPhieuDangKy) {
+    try {
+      const pool = await poolPromise;
+
+      // Kiểm tra số lượng phiếu gia hạn hiện tại
+      const checkResult = await pool.request()
+        .input('maPhieuDangKy', sql.Char(10), maPhieuDangKy)
+        .query(`
+          SELECT COUNT(*) AS SoLanGiaHan
+          FROM PHIEUGIAHAN
+          WHERE MADANGKY = @maPhieuDangKy
+        `);
+
+      const soLanGiaHan = checkResult.recordset[0].SoLanGiaHan;
+
+      let trangThai = '';
+      if (soLanGiaHan === 1) {
+        trangThai = 'Đã gia hạn lần 1';
+      } else {
+        trangThai = 'Đã gia hạn lần 2';
+      }
+
+      // Cập nhật trạng thái
+      await pool.request()
+        .input('trangThai', sql.NVarChar(50), trangThai)
+        .input('maPhieuDangKy', sql.Char(10), maPhieuDangKy)
+        .query(`
+          UPDATE PHIEUDANGKY
+          SET TRANGTHAIGIAHAN = @trangThai
+          WHERE MAPHIEUDANGKY = @maPhieuDangKy
+        `);
+
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái gia hạn cho phiếu đăng ký:", error);
+      throw error;
+    }
+  }
+
 }
 
 module.exports = PhieuDangKyDAO;

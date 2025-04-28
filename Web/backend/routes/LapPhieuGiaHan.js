@@ -46,7 +46,7 @@ router.post("/lap-phieu-gia-han", isAuthenticated, hasRole("Kế toán"), async 
     }
 
     const phieuGiaHan = await GiaHanBUS.lapPhieuGiaHan({maPhieuDangKy, truongHop, ngayGiaHan, phiGiaHan, lyDoGiaHan});
-
+    
     return res.status(200).json({
       success: true,
       message: "Tạo phiếu gia hạn thành công",
@@ -79,6 +79,18 @@ router.post('/tim-kiem-phieu-dang-ky', isAuthenticated, hasRole("Kế toán"), a
     });
   }
 });
+
+// API lấy danh sách phiếu đăng ký cho JS
+router.get('/api/danh-sach-phieu-dang-ky', isAuthenticated, hasRole("Kế toán"), async (req, res) => {
+  try {
+    const danhSachPhieuDangKy = await PhieuDangKyBUS.layDanhSachPhieuDangKyChoGiaHan();
+    res.json(danhSachPhieuDangKy);
+  } catch (error) {
+    console.error("Lỗi khi tải danh sách phiếu đăng ký:", error);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+});
+
 
 
 module.exports = router;

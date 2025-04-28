@@ -64,7 +64,8 @@
 .table-container {
     margin-bottom: 20px;
     overflow-y: auto;
-    max-height: 400px; /* control height for scrollable area */
+    max-height: 400px;
+    /* control height for scrollable area */
     border: 1px solid #ddd;
 }
 
@@ -72,10 +73,12 @@
 .table-container::-webkit-scrollbar {
     width: 8px;
 }
+
 .table-container::-webkit-scrollbar-thumb {
     background-color: #bbb;
     border-radius: 4px;
 }
+
 .table-container::-webkit-scrollbar-track {
     background-color: #f1f1f1;
 }
@@ -144,4 +147,24 @@
 .phat-hanh-btn:disabled {
     background-color: #6c757d;
     cursor: not-allowed;
+}
+
+.alert {
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }

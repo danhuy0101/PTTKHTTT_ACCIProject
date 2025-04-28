@@ -22,6 +22,7 @@
             <th>Mã phiếu gia hạn</th>
             <th>Phí gia hạn</th>
             <th>Trường hợp gia hạn</th>
+            <th>Trạng thái thanh toán</th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@
             <td>{{this.MAPHIEUGIAHAN}}</td>
             <td>{{this.PHIGIAHAN}}</td>
             <td>{{this.TRUONGHOPGIAHAN}}</td>
+            <td>{{this.TRANGTHAI}}</td>
           </tr>
           {{/each}}
         </tbody>
@@ -53,7 +55,7 @@
 
         <div class="form-group">
           <label for="soTien">Số tiền thanh toán (VNĐ):</label>
-          <input type="number" name="soTien" id="soTien" required>
+          <input type="number" name="soTien" id="soTien" required min="0">
         </div>
 
         <div class="form-group">
@@ -82,6 +84,41 @@
       init() {
         this.handleRowSelection();
         this.handleFormSubmit();
+      }
+
+      async reloadDanhSachPhieuGiaHan() {
+        try {
+          const res = await fetch("/api/phieu-gia-han");
+          const result = await res.json();
+          if (result.success) {
+            const tbody = document.querySelector(".candidates-table tbody");
+            tbody.innerHTML = ""; // Xóa sạch bảng trước
+
+            result.data.forEach(item => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${item.MAPHIEUGIAHAN}</td>
+                <td>${item.PHIGIAHAN}</td>
+                <td>${item.TRUONGHOPGIAHAN}</td>
+                <td>${item.TRANGTHAI}</td>
+              `;
+              row.addEventListener("click", () => {
+                if (this.selectedRow) {
+                  this.selectedRow.classList.remove("selected");
+                }
+                row.classList.add("selected");
+                this.selectedRow = row;
+                document.getElementById("maPhieuGiaHanInput").value = item.MAPHIEUGIAHAN;
+              });
+              tbody.appendChild(row);
+            });
+
+          } else {
+            console.error("Không thể tải lại danh sách phiếu gia hạn");
+          }
+        } catch (error) {
+          console.error("Lỗi khi reload danh sách phiếu gia hạn:", error);
+        }
       }
 
       handleRowSelection() {
@@ -115,20 +152,22 @@
             });
 
             const result = await res.json();
+            const thongBao = document.getElementById("thongBaoKetQua");
+
             if (result.success) {
-              document.getElementById("thongBaoKetQua").innerHTML = 
-                `<div class="alert alert-success">${result.message}</div>`;
+              thongBao.innerHTML = `<p style="color:green">${result.message}</div>`;
+              await this.reloadDanhSachPhieuGiaHan(); // <<< Thêm dòng này
             } else {
-              document.getElementById("thongBaoKetQua").innerHTML = 
-                `<div class="alert alert-danger">${result.message}</div>`;
+              thongBao.innerHTML = `<p style="color:red">${result.message}</div>`;
             }
           } catch (error) {
             console.error('Lỗi khi tạo thanh toán gia hạn:', error);
-            document.getElementById("thongBaoKetQua").innerHTML = 
+            document.getElementById("thongBaoKetQua").innerHTML =
               `<div class="alert alert-danger">Đã xảy ra lỗi khi tạo thanh toán gia hạn</div>`;
           }
         });
       }
+
     }
 
     new MH_LapThanhToanGiaHan();

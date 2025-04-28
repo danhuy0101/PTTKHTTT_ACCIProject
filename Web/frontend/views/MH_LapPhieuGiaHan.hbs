@@ -8,7 +8,8 @@
 
     <div class="search-section">
       <form action="/tim-kiem-phieu-dang-ky" method="POST" class="search-form">
-        <input type="text" name="tuKhoa" placeholder="Nhập mã hoặc tên thí sinh" value="{{tuKhoa}}" class="search-input">
+        <input type="text" name="tuKhoa" placeholder="Nhập mã phiếu hoặc tên thí sinh hoặc mã lịch thi" value="{{tuKhoa}}"
+          class="search-input">
         <button type="submit" class="search-button">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
@@ -19,23 +20,21 @@
       <table class="candidates-table">
         <thead>
           <tr>
-            <th>Mã thí sinh</th>
-            <th>Tên thí sinh</th>
-            <th>Ngày sinh</th>
             <th>Mã phiếu đăng ký</th>
+            <th>Tên thí sinh</th>
+            <th>Mã lịch thi</th>
             <th>Ngày thi</th>
-            <th>Trình độ</th>
+            <th>Trạng thái gia hạn</th>
           </tr>
         </thead>
         <tbody>
           {{#each danhSachPhieuDangKy}}
           <tr>
-            <td>{{this.MATHISINH}}</td>
-            <td>{{this.TENTHISINH}}</td>
-            <td>{{formatDate this.NGAYSINH}}</td>
             <td>{{this.MAPHIEUDANGKY}}</td>
+            <td>{{this.TENKHACHHANG}}</td>
+            <td>{{this.MALICHTHI}}</td>
             <td>{{formatDate this.NGAYTHI}}</td>
-            <td>{{this.TRINHDO}}</td>
+            <td>{{this.TRANGTHAIGIAHAN}}</td>
           </tr>
           {{/each}}
         </tbody>
@@ -46,7 +45,6 @@
       <h2>Thông tin gia hạn</h2>
       <form id="formGiaHan">
         <input type="hidden" name="maPhieuDangKy" id="maPhieuDangKyInput">
-        <input type="hidden" name="maThiSinh" id="maThiSinhInput">
 
         <div class="form-group">
           <label for="truongHop">Hình thức gia hạn:</label>
@@ -63,8 +61,8 @@
         </div>
 
         <div class="form-group">
-          <label for="phiGiaHan">Phí gia hạn (VNĐ):</label>
-          <input type="number" name="phiGiaHan" id="phiGiaHan" required>
+          <label for="phiGiaHan">Phí gia hạn dự kiến (VNĐ):</label>
+          <input type="number" name="phiGiaHan" id="phiGiaHan" required min="0">
         </div>
 
         <div class="form-group" id="lyDoSection" style="display: none;">
@@ -106,9 +104,8 @@
             row.classList.add("selected");
             this.selectedRow = row;
 
-            document.getElementById("maThiSinhInput").value = row.cells[0].textContent.trim();
-            document.getElementById("maPhieuDangKyInput").value = row.cells[3].textContent.trim();
-            console.log(document.getElementById("maPhieuDangKyInput").value)
+            document.getElementById("maPhieuDangKyInput").value = row.cells[0].textContent.trim();
+            console.log(document.getElementById("maPhieuDangKyInput").value);
           });
         });
       }
@@ -116,14 +113,27 @@
       handleTruongHopChange() {
         const select = document.getElementById("truongHop");
         const lyDoSection = document.getElementById("lyDoSection");
+        const phiGiaHanInput = document.getElementById("phiGiaHan");
 
         select.addEventListener("change", function () {
           if (this.value === "Đặc biệt") {
             lyDoSection.style.display = "block";
             document.getElementById("lyDoGiaHan").setAttribute("required", "required");
-          } else {
+
+            phiGiaHanInput.value = 0;
+            phiGiaHanInput.setAttribute("readonly", "readonly");
+          } else if (this.value === "Không đặc biệt") {
             lyDoSection.style.display = "none";
             document.getElementById("lyDoGiaHan").removeAttribute("required");
+
+            phiGiaHanInput.value = "";
+            phiGiaHanInput.removeAttribute("readonly");
+          }
+        });
+
+        phiGiaHanInput.addEventListener("input", function () {
+          if (this.value < 0) {
+            this.value = 0;
           }
         });
       }
@@ -148,10 +158,16 @@
 
             if (result.success) {
               tb.innerHTML = `<p style="color:green">${result.message}</p>`;
+
+              // Reset form
               form.reset();
               document.getElementById("lyDoSection").style.display = "none";
               if (this.selectedRow) this.selectedRow.classList.remove("selected");
               this.selectedRow = null;
+
+              // Load lại danh sách phiếu đăng ký
+              await this.reloadDanhSachPhieuDangKy();
+
             } else {
               tb.innerHTML = `<p style="color:red">${result.message}</p>`;
             }
@@ -162,6 +178,41 @@
           }
         });
       }
+
+      async reloadDanhSachPhieuDangKy() {
+        try {
+          const res = await fetch("/api/danh-sach-phieu-dang-ky");
+          const danhSachPhieuDangKy = await res.json();
+
+          const tbody = document.querySelector(".candidates-table tbody");
+          tbody.innerHTML = ""; // Clear bảng cũ
+
+          danhSachPhieuDangKy.forEach(phieu => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+        <td>${phieu.MAPHIEUDANGKY}</td>
+        <td>${phieu.TENKHACHHANG}</td>
+        <td>${phieu.MALICHTHI}</td>
+        <td>${this.formatDate(phieu.NGAYTHI)}</td>
+        <td>${phieu.TRANGTHAIGIAHAN}</td>
+      `;
+            tbody.appendChild(row);
+          });
+
+          // Sau khi reload xong -> gán lại sự kiện click cho từng dòng
+          this.handleRowSelection();
+
+        } catch (error) {
+          console.error("Lỗi tải danh sách phiếu đăng ký:", error);
+        }
+      }
+
+      // Helper format date nếu cần
+      formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('vi-VN');
+      }
+
     }
 
     new MH_LapPhieuGiaHan();
