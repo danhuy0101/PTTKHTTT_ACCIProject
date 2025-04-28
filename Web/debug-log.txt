@@ -1,15 +1,15 @@
 {
-  "khachHang.ten": "Ha Ha",
-  "khachHang.ngaySinh": "2025-04-11",
-  "khachHang.diaChi": "sdffdssfd",
+  "khachHang.ten": "Lê Lai",
+  "khachHang.ngaySinh": "2025-04-17",
+  "khachHang.diaChi": "CFthdf",
   "khachHang.sdt": "0907465827",
   "khachHang.email": "sdfdsfsdf@gmail.com",
-  "thiSinh.ten": "Ha Ha",
-  "thiSinh.ngaySinh": "2025-04-11",
-  "thiSinh.diaChi": "sdffdssfd",
+  "thiSinh.ten": "Lê Lai",
+  "thiSinh.ngaySinh": "2025-04-17",
+  "thiSinh.diaChi": "CFthdf",
   "thiSinh.sdt": "0907465827",
   "thiSinh.email": "sdfdsfsdf@gmail.com",
-  "lichThi.linhVuc": "LV00000001",
-  "lichThi.baiThi": "DG00000001",
-  "lichThi.maLichThi": "LT00000001"
+  "lichThi.linhVuc": "LV00000002",
+  "lichThi.baiThi": "DG00000009",
+  "lichThi.maLichThi": "LT00000009"
 }

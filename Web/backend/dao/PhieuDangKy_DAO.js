@@ -62,7 +62,9 @@ class PhieuDangKyDAO {
       MAKHACHHANG,
       MALICHTHI,
       MANHANVIEN,
-      TRANGTHAIHOADON
+      TRANGTHAIHOADON,
+      MANGAYTHICU,
+      TRANGTHAIGIAHAN
     } = pdk;
 
     const pool = await poolPromise;
@@ -74,11 +76,13 @@ class PhieuDangKyDAO {
       .input('MALT', sql.Char(10), MALICHTHI)
       .input('MANV', sql.Char(10), MANHANVIEN)
       .input('TTHD', sql.NVarChar(10), TRANGTHAIHOADON)
+      .input('MANTCU', sql.Char(10), MANGAYTHICU)
+      .input('TTGH', sql.NVarChar(30), TRANGTHAIGIAHAN)
       .query(`
         INSERT INTO PHIEUDANGKY (
-          MAPHIEUDANGKY, NGAYDANGKY, MAKHACHHANG, MALICHTHI, MANHANVIEN, TRANGTHAIHOADON
+          MAPHIEUDANGKY, NGAYDANGKY, MAKHACHHANG, MALICHTHI, MANHANVIEN, TRANGTHAIHOADON, MANGAYTHICU, TRANGTHAIGIAHAN
         ) VALUES (
-          @MAPDK, @NGAYDK, @MAKH, @MALT, @MANV, @TTHD
+          @MAPDK, @NGAYDK, @MAKH, @MALT, @MANV, @TTHD, @MANTCU, @TTGH
         )
       `);
   }
