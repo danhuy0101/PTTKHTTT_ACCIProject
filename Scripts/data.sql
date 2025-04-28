@@ -48,18 +48,18 @@ VALUES
 ('LV00000002', N'Tin học');
 GO
 
-INSERT INTO PHONGTHI (MAPHONG, TENPHONG, VITRIPHONG)
+INSERT INTO PHONGTHI (MAPHONG, TENPHONG, VITRIPHONG, SUCCHUA)
 VALUES 
-('PT0000001', N'Phòng Thi 1', N'Tầng 1, Khu A'),
-('PT0000002', N'Phòng Thi 2', N'Tầng 1, Khu A'),
-('PT0000003', N'Phòng Thi 3', N'Tầng 2, Khu B'),
-('PT0000004', N'Phòng Thi 4', N'Tầng 2, Khu B'),
-('PT0000005', N'Phòng Thi 5', N'Tầng 3, Khu C'),
-('PT0000006', N'Phòng Thi 6', N'Tầng 3, Khu C'),
-('PT0000007', N'Phòng Thi 7', N'Tầng 4, Khu D'),
-('PT0000008', N'Phòng Thi 8', N'Tầng 4, Khu D'),
-('PT0000009', N'Phòng Thi 9', N'Tầng 5, Khu E'),
-('PT0000010', N'Phòng Thi 10', N'Tầng 5, Khu E');
+('PT0000001', N'Phòng Thi 1', N'Tầng 1, Khu A', 30),
+('PT0000002', N'Phòng Thi 2', N'Tầng 1, Khu A', 20),
+('PT0000003', N'Phòng Thi 3', N'Tầng 2, Khu B', 15),
+('PT0000004', N'Phòng Thi 4', N'Tầng 2, Khu B', 40),
+('PT0000005', N'Phòng Thi 5', N'Tầng 3, Khu C', 60),
+('PT0000006', N'Phòng Thi 6', N'Tầng 3, Khu C', 100),
+('PT0000007', N'Phòng Thi 7', N'Tầng 4, Khu D', 35),
+('PT0000008', N'Phòng Thi 8', N'Tầng 4, Khu D', 40),
+('PT0000009', N'Phòng Thi 9', N'Tầng 5, Khu E', 20),
+('PT0000010', N'Phòng Thi 10', N'Tầng 5, Khu E', 50);
 GO
 
 INSERT INTO LOAIDANHGIANANGLUC (MADANHGIA, TENDANHGIA, CAPDO, MALINHVUC, GIAHIENTAI)
