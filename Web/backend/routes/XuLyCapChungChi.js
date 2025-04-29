@@ -26,7 +26,7 @@ router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), as
       hasResult = danhSach.length > 0;
     }
 
-    res.render('MH_XuLyTraoChungChi_KHTuDo', {
+    res.render('MH_XuLyCapChungChi_KHTuDo', {
       layout: 'main',
       user: req.session.user,
       danhSach,
@@ -37,7 +37,7 @@ router.get('/cap-chung-chi/tu-do', isAuthenticated, hasRole("Tiếp nhận"), as
     });
   } catch (err) {
     console.error('❌ Lỗi tìm kiếm chứng chỉ:', err);
-    res.render('MH_XuLyTraoChungChi_KHTuDo', {
+    res.render('MH_XuLyCapChungChi_KHTuDo', {
       layout: 'main',
       user: req.session.user,
       danhSach: [],
@@ -65,7 +65,7 @@ router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), a
       hasResult = danhSach.length > 0;
     }
 
-    res.render('MH_XuLyTraoChungChi_KHDonVi', {
+    res.render('MH_XuLyCapChungChi_KHDonVi', {
       layout: 'main',
       user: req.session.user,
       danhSach,
@@ -76,7 +76,7 @@ router.get('/cap-chung-chi/don-vi', isAuthenticated, hasRole("Tiếp nhận"), a
     });
   } catch (err) {
     console.error('❌ Lỗi KH đơn vị:', err);
-    res.render('MH_XuLyTraoChungChi_KHDonVi', {
+    res.render('MH_XuLyCapChungChi_KHDonVi', {
       layout: 'main',
       user: req.session.user,
       danhSach: [],
