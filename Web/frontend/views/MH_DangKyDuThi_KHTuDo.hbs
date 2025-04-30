@@ -161,7 +161,7 @@
 
       if (maDanhGia) {
         try {
-          const res = await fetch(`/api/lich-thi/${maDanhGia}`);
+          const res = await fetch(`/api/lich-thi-tu-do/${maDanhGia}`);
           const data = await res.json();
           if (data.length === 0) {
             lichThiSelect.innerHTML = `<option value="">Không có lịch thi</option>`;

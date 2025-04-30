@@ -3,6 +3,7 @@ const router = express.Router();
 const session = require('express-session');
 const { isAuthenticated, hasRole } = require("../middleware/auth");
 const AuthBUS = require("../bus/AuthBUS");
+const LoaiDanhGiaNangLuc_Bus = require("../bus/LoaiDanhGiaNangLuc_Bus");
 
 // Set up session middleware
 router.use(session({
@@ -68,6 +69,17 @@ router.get('/logout', (req, res) => {
 // Contact admin route
 router.get("/contact-admin", (req, res) => {
   res.render("contact-admin", { layout: 'login' });
+});
+
+// API lấy danh sách bài thi theo MALINHVUC
+router.get("/api/bai-thi/:maLinhVuc", async (req, res) => {
+  try {
+    const danhSachBaiThi = await LoaiDanhGiaNangLuc_Bus.LayDanhSachBaiThi(req.params.maLinhVuc);
+    res.json(danhSachBaiThi);
+  } catch (err) {
+    console.error("Lỗi lấy bài thi:", err);
+    res.status(500).json({ error: "Không lấy được bài thi." });
+  }
 });
 
 // Include pages
