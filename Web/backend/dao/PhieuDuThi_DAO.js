@@ -12,15 +12,15 @@ class PhieuDuThiDAO {
     static async taoPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
             const pool = await poolPromise;
-            
+
             // Tạo mã phiếu dự thi tự động
             const nextIdResult = await pool.request().query(`
                 SELECT 'PDT' + RIGHT('000000' + CAST(ISNULL(MAX(CAST(RIGHT(MAPHIEUDUTHI, 7) AS INT)), 0) + 1 AS VARCHAR(7)), 7) AS NextId
                 FROM PHIEUDUTHI
             `);
-            
+
             const newId = nextIdResult.recordset[0].NextId;
-            
+
             // Kiểm tra phiếu đăng ký có tồn tại không
             const pdkResult = await pool.request()
                 .input('maPhieuDangKy', sql.NVarChar, maPhieuDangKy)
@@ -29,25 +29,25 @@ class PhieuDuThiDAO {
                     FROM PHIEUDANGKY
                     WHERE MAPHIEUDANGKY = @maPhieuDangKy
                 `);
-            
+
             if (pdkResult.recordset.length === 0) {
                 throw new Error(`Không tìm thấy mã phiếu đăng ký ${maPhieuDangKy}`);
             }
-            
+
             const MANHANVIEN = 'NV0000004';
-            
+
             console.log(`Sử dụng mã thí sinh: ${maThiSinh} cho phiếu đăng ký: ${maPhieuDangKy}`);
-            
+
             // Tạo số báo danh tự động dưới dạng "0xxxxx"
             const nextSBDResult = await pool.request().query(`
                 SELECT RIGHT('000000' + CAST(ISNULL(MAX(CAST(SBD AS INT)), 0) + 1 AS VARCHAR(6)), 6) AS NextSBD
                 FROM PHIEUDUTHI
             `);
-            
+
             const newSBD = nextSBDResult.recordset[0].NextSBD;
-            
+
             const today = new Date().toISOString().split('T')[0];
-            
+
             // Thêm phiếu dự thi mới vào cơ sở dữ liệu
             await pool.request()
                 .input('newId', sql.NVarChar, newId)
@@ -60,7 +60,7 @@ class PhieuDuThiDAO {
                     INSERT INTO PHIEUDUTHI (MAPHIEUDUTHI, SBD, TRANGTHAI, NGAYPHATHANH, MANHANVIEN, MAPHIEUDANGKY, MATHISINH)
                     VALUES (@newId, @newSBD, N'Chưa gửi', @today, @MANHANVIEN, @maPhieuDangKy, @MATHISINH)
                 `);
-            
+
             // Lấy thông tin phiếu dự thi vừa tạo
             const result = await pool.request()
                 .input('newId', sql.NVarChar, newId)
@@ -76,7 +76,7 @@ class PhieuDuThiDAO {
                     FROM PHIEUDUTHI
                     WHERE MAPHIEUDUTHI = @newId
                 `);
-            
+
             return result.recordset[0];
         } catch (error) {
             console.error('Lỗi cơ sở dữ liệu khi tạo phiếu dự thi:', error);
@@ -95,7 +95,7 @@ class PhieuDuThiDAO {
     static async capNhatTrangThai(maPhieuDuThi, trangThai) {
         try {
             const pool = await poolPromise;
-            
+
             await pool.request()
                 .input('trangThai', sql.NVarChar, trangThai)
                 .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
@@ -104,7 +104,7 @@ class PhieuDuThiDAO {
                     SET TRANGTHAI = @trangThai
                     WHERE MAPHIEUDUTHI = @maPhieuDuThi
                 `);
-            
+
             return { success: true };
         } catch (error) {
             console.error('Lỗi cơ sở dữ liệu khi cập nhật trạng thái phiếu dự thi:', error);
@@ -122,29 +122,29 @@ class PhieuDuThiDAO {
             // Lấy thông tin thí sinh
             console.log(`Bắt đầu gửi email cho phiếu dự thi: ${maPhieuDuThi}`);
             const phieuDuThi = await this.timPhieuDuThiTheoMa(maPhieuDuThi);
-            
+
             if (!phieuDuThi) {
                 throw new Error(`Không tìm thấy phiếu dự thi ${maPhieuDuThi}`);
             }
-            
+
             console.log('Thông tin phiếu dự thi:', JSON.stringify(phieuDuThi, null, 2));
-            
+
             const { EMAIL, TENTHISINH, SBD, NGAYPHATHANH, NGAYTHI, GIOTHI_STR, TENPHONG, VITRIPHONG } = phieuDuThi;
-            
+
             if (!EMAIL) {
                 throw new Error(`Thí sinh không có địa chỉ email`);
             }
-            
+
             console.log(`Chuẩn bị gửi email đến: ${EMAIL}`);
-            
+
             // Định dạng ngày thi và giờ thi
             const ngayThiFormatted = NGAYTHI ? new Date(NGAYTHI).toLocaleDateString('vi-VN') : 'Chưa xác định';
             // Sử dụng chuỗi giờ thi đã được định dạng từ SQL Server
             const gioThiFormatted = GIOTHI_STR || 'Chưa xác định';
-            
+
             const tenPhongFormatted = TENPHONG || 'Chưa xác định';
             const vitriPhongFormatted = VITRIPHONG || 'Chưa xác định';
-            
+
             // Cấu hình nội dung email
             const mailOptions = {
                 from: process.env.EMAIL_USER,
@@ -169,13 +169,13 @@ class PhieuDuThiDAO {
                     </ul>
                     <p>Vui lòng mang theo giấy tờ tùy thân khi tham gia kỳ thi.</p>
                     <p>Trân trọng,</p>
-                    <p>Trung tâm ngoại ngữ</p>
+                    <p>Trung tâm Ngoại ngữ và Tin học ACCI.</p>
                 `
             };
-            
+
             console.log('Mail options:', JSON.stringify(mailOptions, null, 2));
             console.log('Thông tin người gửi:', process.env.EMAIL_USER);
-            
+
             // Gửi email
             try {
                 await transporter.sendMail(mailOptions);
@@ -184,12 +184,12 @@ class PhieuDuThiDAO {
                 console.error('Lỗi khi gửi email:', emailError);
                 throw new Error(`Lỗi gửi email: ${emailError.message}`);
             }
-            
+
             // Cập nhật trạng thái phiếu dự thi
             await this.capNhatTrangThai(maPhieuDuThi, 'Đã gửi');
-            
+
             console.log(`Đã gửi email thông báo cho phiếu dự thi ${maPhieuDuThi} đến ${EMAIL}`);
-            
+
             return { success: true, message: `Đã gửi email thông báo đến ${EMAIL}` };
         } catch (error) {
             console.error('Lỗi chi tiết:', error);
@@ -205,35 +205,36 @@ class PhieuDuThiDAO {
     static async timPhieuDuThiTheoMa(maPhieuDuThi) {
         try {
             const pool = await poolPromise;
-            
+
             const result = await pool.request()
                 .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
                 .query(`
-                    SELECT 
-                        p.MAPHIEUDUTHI,
-                        p.SBD,
-                        p.TRANGTHAI,
-                        p.NGAYPHATHANH,
-                        p.MANHANVIEN,
-                        p.MAPHIEUDANGKY,
-                        p.MATHISINH,
-                        t.TENTHISINH,
-                        t.EMAIL,
-                        l.NGAYTHI,
-                        CONVERT(VARCHAR(8), l.GIOTHI, 108) AS GIOTHI_STR,
-                        ph.TENPHONG,
-                        ph.VITRIPHONG
-                    FROM PHIEUDUTHI p
-                    JOIN THISINH t ON p.MATHISINH = t.MATHISINH
-                    JOIN LICHTHI l ON t.MALICHTHI = l.MALICHTHI
-                    JOIN PHONGTHI ph ON l.MAPHONG = ph.MAPHONG
-                    WHERE p.MAPHIEUDUTHI = @maPhieuDuThi
+                SELECT 
+                    p.MAPHIEUDUTHI,
+                    p.SBD,
+                    p.TRANGTHAI,
+                    p.NGAYPHATHANH,
+                    p.MANHANVIEN,
+                    p.MAPHIEUDANGKY,
+                    p.MATHISINH,
+                    t.TENTHISINH,
+                    t.EMAIL,
+                    l.NGAYTHI,
+                    CONVERT(VARCHAR(8), l.GIOTHI, 108) AS GIOTHI_STR,
+                    ph.TENPHONG,
+                    ph.VITRIPHONG
+                FROM PHIEUDUTHI p
+                JOIN THISINH t ON p.MATHISINH = t.MATHISINH
+                JOIN PHIEUDANGKY K ON K.MAPHIEUDANGKY = p.MAPHIEUDANGKY
+                JOIN LICHTHI l ON K.MALICHTHI = l.MALICHTHI
+                JOIN PHONGTHI ph ON l.MAPHONG = ph.MAPHONG
+                WHERE p.MAPHIEUDUTHI = @maPhieuDuThi
                 `);
-            
+
             if (result.recordset.length > 0) {
                 return result.recordset[0];
             }
-            
+
             return null;
         } catch (error) {
             console.error('Lỗi cơ sở dữ liệu khi tìm phiếu dự thi:', error);
@@ -253,11 +254,11 @@ class PhieuDuThiDAO {
                 SELECT TRANGTHAI FROM PHIEUDUTHI 
                 WHERE MAPHIEUDUTHI = @maPhieuDuThi
             `;
-            
+
             const result = await pool.request()
                 .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
                 .query(checkQuery);
-                
+
             if (result.recordset.length > 0) {
                 return {
                     found: true,
