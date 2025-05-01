@@ -38,19 +38,8 @@ router.get("/dang-ky-du-thi/khach-hang-tu-do", isAuthenticated, hasRole("Tiếp 
   }
 });
 
-// API lấy danh sách bài thi theo MALINHVUC
-router.get("/api/bai-thi/:maLinhVuc", async (req, res) => {
-  try {
-    const danhSachBaiThi = await LoaiDanhGiaNangLuc_Bus.LayDanhSachBaiThi(req.params.maLinhVuc);
-    res.json(danhSachBaiThi);
-  } catch (err) {
-    console.error("Lỗi lấy bài thi:", err);
-    res.status(500).json({ error: "Không lấy được bài thi." });
-  }
-});
-
 // API lấy lịch thi theo MADANHGIA
-router.get("/api/lich-thi/:maDanhGia", async (req, res) => {
+router.get("/api/lich-thi-tu-do/:maDanhGia", async (req, res) => {
   try {
     const danhSachLichThi = await LichThi_Bus.LayDanhSachLichThiKhaDung_KHTuDo(req.params.maDanhGia);
     res.json(danhSachLichThi);
