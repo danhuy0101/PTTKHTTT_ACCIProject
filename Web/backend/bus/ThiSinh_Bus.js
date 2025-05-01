@@ -2,10 +2,6 @@ const ThiSinhDAO = require('../dao/ThiSinh_DAO');
 
 class ThiSinh_Bus {
 
-    /**
-     * Lấy danh sách thí sinh chưa có phiếu dự thi
-     * @returns {Array} Danh sách thí sinh chưa có phiếu dự thi
-     */
     static async layDanhSachThiSinhChuaCoPhieuDuThi() {
         try {
             return await ThiSinhDAO.layDanhSachThiSinhChuaCoPhieuDuThi();
@@ -15,11 +11,6 @@ class ThiSinh_Bus {
         }
     }
 
-    /**
-     * Tìm kiếm thí sinh chưa có phiếu dự thi theo tên hoặc mã
-     * @param {string} tuKhoa - Từ khóa tìm kiếm
-     * @returns {Array} Danh sách thí sinh phù hợp
-     */
     static async timKiemThiSinhChuaCoPhieuDuThi(tuKhoa) {
         try {
             return await ThiSinhDAO.timKiemThiSinhChuaCoPhieuDuThi(tuKhoa);

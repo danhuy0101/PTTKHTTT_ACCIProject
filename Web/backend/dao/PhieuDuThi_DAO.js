@@ -3,12 +3,7 @@ const transporter = require('../utils/emailConfig');
 
 
 class PhieuDuThiDAO {
-    /**
-     * Tạo và lưu phiếu dự thi mới vào cơ sở dữ liệu
-     * @param {string} maPhieuDangKy - Mã phiếu đăng ký
-     * @param {number} maThiSinh - Mã thí sinh
-     * @returns {Object} Phiếu dự thi đã tạo
-     */
+    
     static async taoPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
             const pool = await poolPromise;
@@ -86,37 +81,46 @@ class PhieuDuThiDAO {
         }
     }
 
-    /**
-     * Cập nhật trạng thái phiếu dự thi
-     * @param {string} maPhieuDuThi - Mã phiếu dự thi
-     * @param {string} trangThai - Trạng thái mới
-     * @returns {Object} Kết quả cập nhật
-     */
-    static async capNhatTrangThai(maPhieuDuThi, trangThai) {
+    static async timPhieuDuThiTheoMa(maPhieuDuThi) {
         try {
             const pool = await poolPromise;
 
-            await pool.request()
-                .input('trangThai', sql.NVarChar, trangThai)
+            const result = await pool.request()
                 .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
                 .query(`
-                    UPDATE PHIEUDUTHI
-                    SET TRANGTHAI = @trangThai
-                    WHERE MAPHIEUDUTHI = @maPhieuDuThi
+                SELECT 
+                    p.MAPHIEUDUTHI,
+                    p.SBD,
+                    p.TRANGTHAI,
+                    p.NGAYPHATHANH,
+                    p.MANHANVIEN,
+                    p.MAPHIEUDANGKY,
+                    p.MATHISINH,
+                    t.TENTHISINH,
+                    t.EMAIL,
+                    l.NGAYTHI,
+                    CONVERT(VARCHAR(8), l.GIOTHI, 108) AS GIOTHI_STR,
+                    ph.TENPHONG,
+                    ph.VITRIPHONG
+                FROM PHIEUDUTHI p
+                JOIN THISINH t ON p.MATHISINH = t.MATHISINH
+                JOIN PHIEUDANGKY K ON K.MAPHIEUDANGKY = p.MAPHIEUDANGKY
+                JOIN LICHTHI l ON K.MALICHTHI = l.MALICHTHI
+                JOIN PHONGTHI ph ON l.MAPHONG = ph.MAPHONG
+                WHERE p.MAPHIEUDUTHI = @maPhieuDuThi
                 `);
 
-            return { success: true };
+            if (result.recordset.length > 0) {
+                return result.recordset[0];
+            }
+
+            return null;
         } catch (error) {
-            console.error('Lỗi cơ sở dữ liệu khi cập nhật trạng thái phiếu dự thi:', error);
+            console.error('Lỗi cơ sở dữ liệu khi tìm phiếu dự thi:', error);
             throw error;
         }
     }
 
-    /**
-     * Gửi email thông báo
-     * @param {string} maPhieuDuThi - Mã phiếu dự thi
-     * @returns {Object} Kết quả gửi email
-     */
     static async guiThongBaoEmail(maPhieuDuThi) {
         try {
             // Lấy thông tin thí sinh
@@ -186,7 +190,7 @@ class PhieuDuThiDAO {
             }
 
             // Cập nhật trạng thái phiếu dự thi
-            await this.capNhatTrangThai(maPhieuDuThi, 'Đã gửi');
+            // await this.capNhatTrangThai(maPhieuDuThi, 'Đã gửi');
 
             console.log(`Đã gửi email thông báo cho phiếu dự thi ${maPhieuDuThi} đến ${EMAIL}`);
 
@@ -197,56 +201,6 @@ class PhieuDuThiDAO {
         }
     }
 
-    /**
-     * Tìm phiếu dự thi theo mã
-     * @param {string} maPhieuDuThi - Mã phiếu dự thi
-     * @returns {Object} Thông tin phiếu dự thi
-     */
-    static async timPhieuDuThiTheoMa(maPhieuDuThi) {
-        try {
-            const pool = await poolPromise;
-
-            const result = await pool.request()
-                .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
-                .query(`
-                SELECT 
-                    p.MAPHIEUDUTHI,
-                    p.SBD,
-                    p.TRANGTHAI,
-                    p.NGAYPHATHANH,
-                    p.MANHANVIEN,
-                    p.MAPHIEUDANGKY,
-                    p.MATHISINH,
-                    t.TENTHISINH,
-                    t.EMAIL,
-                    l.NGAYTHI,
-                    CONVERT(VARCHAR(8), l.GIOTHI, 108) AS GIOTHI_STR,
-                    ph.TENPHONG,
-                    ph.VITRIPHONG
-                FROM PHIEUDUTHI p
-                JOIN THISINH t ON p.MATHISINH = t.MATHISINH
-                JOIN PHIEUDANGKY K ON K.MAPHIEUDANGKY = p.MAPHIEUDANGKY
-                JOIN LICHTHI l ON K.MALICHTHI = l.MALICHTHI
-                JOIN PHONGTHI ph ON l.MAPHONG = ph.MAPHONG
-                WHERE p.MAPHIEUDUTHI = @maPhieuDuThi
-                `);
-
-            if (result.recordset.length > 0) {
-                return result.recordset[0];
-            }
-
-            return null;
-        } catch (error) {
-            console.error('Lỗi cơ sở dữ liệu khi tìm phiếu dự thi:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Kiểm tra trạng thái hiện tại của phiếu dự thi
-     * @param {string} maPhieuDuThi - Mã phiếu dự thi
-     * @returns {Object} Thông tin về trạng thái phiếu
-     */
     static async kiemTraTrangThai(maPhieuDuThi) {
         try {
             const pool = await poolPromise;
@@ -269,6 +223,26 @@ class PhieuDuThiDAO {
             }
         } catch (error) {
             console.error('Lỗi cơ sở dữ liệu khi kiểm tra trạng thái phiếu dự thi:', error);
+            throw error;
+        }
+    }
+    
+    static async capNhatTrangThai(maPhieuDuThi, trangThai) {
+        try {
+            const pool = await poolPromise;
+
+            await pool.request()
+                .input('trangThai', sql.NVarChar, trangThai)
+                .input('maPhieuDuThi', sql.NVarChar, maPhieuDuThi)
+                .query(`
+                    UPDATE PHIEUDUTHI
+                    SET TRANGTHAI = @trangThai
+                    WHERE MAPHIEUDUTHI = @maPhieuDuThi
+                `);
+
+            return { success: true };
+        } catch (error) {
+            console.error('Lỗi cơ sở dữ liệu khi cập nhật trạng thái phiếu dự thi:', error);
             throw error;
         }
     }

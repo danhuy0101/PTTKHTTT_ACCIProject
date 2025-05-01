@@ -2,10 +2,6 @@ const { sql, poolPromise } = require('../../db');
 
 class ThiSinhDAO {
 
-    /**
-     * Lấy danh sách thí sinh chưa có phiếu dự thi
-     * @returns {Array} Danh sách thí sinh chưa có phiếu
-     */
     static async layDanhSachThiSinhChuaCoPhieuDuThi() {
         try {
             const pool = await poolPromise;
@@ -39,11 +35,6 @@ class ThiSinhDAO {
         }
     }
 
-    /**
-     * Tìm kiếm thí sinh chưa có phiếu dự thi theo tên hoặc mã
-     * @param {string} tuKhoa - Từ khóa tìm kiếm
-     * @returns {Array} Danh sách thí sinh phù hợp
-     */
     static async timKiemThiSinhChuaCoPhieuDuThi(tuKhoa) {
         try {
             const pool = await poolPromise;
