@@ -197,25 +197,6 @@ BEGIN
 END;
 
 GO
---Ngày phát hành chứng chỉ phải diễn ra sau ngày thi trong lịch thi.
-CREATE TRIGGER TRG_Check_NgayCapChungChi
-ON CHUNGCHI
-FOR INSERT, UPDATE
-AS
-BEGIN
-    IF EXISTS (
-        SELECT 1
-        FROM inserted i
-        JOIN PHIEUDUTHI pdt ON i.MAPHIEUDUTHI = pdt.MAPHIEUDUTHI
-        JOIN PHIEUDANGKY pdk ON pdt.MAPHIEUDANGKY = pdk.MAPHIEUDANGKY
-        JOIN LICHTHI lt ON pdk.MALICHTHI = lt.MALICHTHI
-        WHERE i.NGAYCAP <= lt.NGAYTHI
-    )
-    BEGIN
-        ROLLBACK TRANSACTION;
-    END
-END;
-GO
 
 --Hóa đơn phải được thanh toán trong vòng 3 ngày kể từ ngày đăng ký.
 CREATE TRIGGER TRG_Check_HoaDon_ThanhToan
