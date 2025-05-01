@@ -4,11 +4,11 @@ const PhieuDuThi_Bus = require("../bus/PhieuDuThi_Bus");
 const ThiSinh_Bus = require("../bus/ThiSinh_Bus");
 const { isAuthenticated, hasRole } = require("../middleware/auth");
 
-// Exam tickets page - only for "Phát hành" role (MH_LapPhieuDuThi)
+// Exam tickets page - only for "Phát hành" role (MH_PhatHanhPhieuDuThi)
 router.get("/phat-hanh-phieu-du-thi", isAuthenticated, hasRole("Phát hành"), async (req, res) => {
   try {
     const danhSachPhieu = await ThiSinh_Bus.layDanhSachThiSinhChuaCoPhieuDuThi();
-    res.render('MH_LapPhieuDuThi', { 
+    res.render('MH_PhatHanhPhieuDuThi', { 
       danhSachPhieu,
       user: req.session.user
     });
@@ -27,7 +27,7 @@ router.post("/tim-kiem-thi-sinh", isAuthenticated, hasRole("Phát hành"), async
     const { searchQuery } = req.body;
     const danhSachPhieu = await ThiSinh_Bus.timKiemThiSinhChuaCoPhieuDuThi(searchQuery);
     
-    res.render('MH_LapPhieuDuThi', { 
+    res.render('MH_PhatHanhPhieuDuThi', { 
       danhSachPhieu,
       searchQuery: searchQuery,
       user: req.session.user
