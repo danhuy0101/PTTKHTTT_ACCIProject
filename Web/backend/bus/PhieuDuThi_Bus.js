@@ -2,12 +2,7 @@ const { sql, poolPromise } = require('../../db');
 const PhieuDuThiDAO = require('../dao/PhieuDuThi_DAO');
 
 class PhieuDuThi_Bus {
-    /**
-     * Lập phiếu dự thi mới
-     * @param {string} maPhieuDangKy - Mã phiếu đăng ký
-     * @param {number} maThiSinh - Mã thí sinh
-     * @returns {Object} Thông tin phiếu dự thi vừa tạo
-     */
+
     static async lapPhieuDuThi(maPhieuDangKy, maThiSinh) {
         try {
             const phieuDuThi = await PhieuDuThiDAO.taoPhieuDuThi(maPhieuDangKy, maThiSinh);
@@ -18,12 +13,19 @@ class PhieuDuThi_Bus {
         }
     }
 
-    /**
-     * Cập nhật trạng thái phiếu dự thi
-     * @param {string} maPhieuDuThi - Mã phiếu dự thi
-     * @param {string} trangThai - Trạng thái mới (mặc định 'Đã gửi' nếu là phát hành)
-     * @returns {Object} Kết quả cập nhật
-     */
+    static async guiThongBaoEmail(maPhieuDuThi) {
+        try {
+            const phieuDuThi = await PhieuDuThiDAO.timPhieuDuThiTheoMa(maPhieuDuThi);
+            // Xử lý logic gửi email
+            await PhieuDuThiDAO.guiThongBaoEmail(maPhieuDuThi);
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Lỗi khi gửi email thông báo:', error);
+            throw error;
+        }
+    }
+
     static async capNhatTrangThai(maPhieuDuThi, trangThai = 'Đã gửi') {
         try {
             const kiemTraKetQua = await PhieuDuThiDAO.kiemTraTrangThai(maPhieuDuThi);
@@ -60,23 +62,6 @@ class PhieuDuThi_Bus {
         }
     }
 
-    /**
-     * Gửi email thông báo
-     * @param {string} maPhieuDuThi - Mã phiếu dự thi
-     * @returns {Object} Kết quả gửi email
-     */
-    static async guiThongBaoEmail(maPhieuDuThi) {
-        try {
-            const phieuDuThi = await PhieuDuThiDAO.timPhieuDuThiTheoMa(maPhieuDuThi);
-            // Xử lý logic gửi email
-            await PhieuDuThiDAO.guiThongBaoEmail(maPhieuDuThi);
-            
-            return { success: true };
-        } catch (error) {
-            console.error('Lỗi khi gửi email thông báo:', error);
-            throw error;
-        }
-    }
 }
 
 module.exports = PhieuDuThi_Bus;
