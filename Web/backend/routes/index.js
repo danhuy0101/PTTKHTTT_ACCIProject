@@ -35,14 +35,14 @@ router.post("/login", async (req, res) => {
       return res.redirect('/welcome');
     } else {
       res.render('login', { 
-        error: 'Tên đăng nhập hoặc mật khẩu không đúng', 
+        error: 'Tên đăng nhập hoặc mật khẩu không đúng!', 
         layout: 'login' 
       });
     }
   } catch (error) {
     console.error('Login error:', error);
     res.render('login', { 
-      error: 'Có lỗi xảy ra, vui lòng thử lại sau', 
+      error: 'Có lỗi xảy ra, vui lòng thử lại sau.', 
       layout: 'login' 
     });
   }

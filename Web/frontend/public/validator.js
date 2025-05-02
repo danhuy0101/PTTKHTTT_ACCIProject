@@ -20,7 +20,7 @@ function validateName(name) {
 
     // Không chứa số hoặc ký tự đặc biệt (ngoại trừ dấu tiếng Việt và dấu cách)
     const regex = /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯĂÂÊÔƠƯa-zàáâãèéêìíòóôõùúăđĩũơưăâêôơư\s']+$/;
-    if (!regex.test(name)) return 'Tên không được chứa số hoặc ký tự đặc biệt.';
+    if (!regex.test(name)) return 'Tên không chứa số hoặc ký tự đặc biệt.';
 
     // Ít nhất 2 từ
     const words = name.trim().split(/\s+/);
@@ -32,7 +32,7 @@ function validateName(name) {
     // Kiểm tra từng từ phải viết hoa đầu tiên
     for (let word of words) {
         if (word[0] !== word[0].toUpperCase() || word.slice(1) !== word.slice(1).toLowerCase()) {
-            return 'Mỗi từ trong tên phải viết hoa chữ cái đầu.';
+            return 'Tên phải viết hoa chữ cái đầu.';
         }
     }
 
