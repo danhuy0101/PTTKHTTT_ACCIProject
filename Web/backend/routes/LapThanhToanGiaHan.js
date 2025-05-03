@@ -41,14 +41,14 @@ router.post("/lap-thanh-toan-gia-han", isAuthenticated, hasRole("Kế toán"), a
 
     return res.status(200).json({
       success: true,
-      message: "Tạo thanh toán gia hạn thành công",
+      message: "Tạo thanh toán gia hạn thành công!",
       data: phieuGiaHan,
     });
   } catch (error) {
     console.error("Lỗi khi tạo thanh toán gia hạn:", error);
     res.status(500).json({
       success: false,
-      message: "Đã xảy ra lỗi khi tạo thanh toán gia hạn",
+      message: "Đã xảy ra lỗi khi tạo thanh toán gia hạn!",
     });
   }
 });

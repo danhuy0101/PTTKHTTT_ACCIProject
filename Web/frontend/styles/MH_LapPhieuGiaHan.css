@@ -64,7 +64,7 @@
 .table-container {
     margin-bottom: 20px;
     overflow-y: auto;
-    max-height: 400px; /* control height for scrollable area */
+    max-height: 40vh;
     border: 1px solid #ddd;
 }
 
@@ -89,12 +89,13 @@
 .candidates-table thead th {
     position: sticky;
     top: 0;
-    background-color: #e9e9e9;
     z-index: 1;
     padding: 12px 15px;
     text-align: left;
-    border: 1px solid #ddd;
-    font-weight: 500;
+    background-color: var(--primary-color);
+    font-weight: 600;
+    color: white;
+    border: 1px solid var(--primary-color);
 }
 
 .candidates-table td {
@@ -144,4 +145,93 @@
 .phat-hanh-btn:disabled {
     background-color: #6c757d;
     cursor: not-allowed;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    width: 100%;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-family: "Montserrat";
+    display: block;
+    width: 100%;
+    font-size: 14px;
+}
+
+.form-group input, .form-group select {
+    padding: 0.5em;
+    font-size: 14px;
+    border-radius: 0.4rem;
+    border: 1px solid rgb(124, 120, 120);
+    width: 100%;
+}
+
+.submit-btn {
+    width: 20rem;
+    padding: 0.75em 2.5em;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid var(--primary-color);
+    border-radius: 0.5rem;
+    color: white;
+    background-color: var(--primary-color);
+    transition: color 0.3s, background-color 0.3s, border 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.submit-btn:hover {
+    border: 2px solid var(--primary-color-darker);
+    background-color: var(--primary-color-darker);
+    color: white;
+}
+
+.submit-btn:active {
+    border: 2px solid var(--primary-color-darker);
+    background-color: white;
+    color: var(--primary-color-darker);
+}
+
+.submit-btn-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.submit-btn-container textarea {
+    width: 80%;
+    padding: 12px;
+}
+
+.submit-success {
+    position: absolute;
+    top: 4.5em;
+    right: 1.5em;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-size: 1rem;
+    z-index: 9999;
+    animation: fadeInOut 4s ease-in-out;
+    display: none;
+}
+
+@keyframes fadeInOut {
+    0%   { opacity: 0; transform: translateX(10px); }
+    10%  { opacity: 1; transform: translateX(0); }
+    90%  { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(10px); }
 }
