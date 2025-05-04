@@ -9,8 +9,8 @@
     <div class="search-section">
       <form action="/tim-kiem-phieu-dang-ky" method="POST" class="search-form">
         <div class="search-wrapper">
-          <input type="text" name="tuKhoa" placeholder="Nhập mã phiếu hoặc tên thí sinh hoặc mã lịch thi" value="{{tuKhoa}}"
-            class="search-input">
+          <input type="text" name="tuKhoa" placeholder="Nhập mã phiếu hoặc tên thí sinh hoặc mã lịch thi"
+            value="{{tuKhoa}}" class="search-input">
           <button type="submit" class="search-button">
             <i class="fa-solid fa-magnifying-glass"></i>
           </button>
@@ -104,9 +104,16 @@
         const rows = document.querySelectorAll(".candidates-table tbody tr");
         rows.forEach(row => {
           row.addEventListener("click", () => {
+            const trangThai = row.cells[4].textContent.trim(); // cột thứ 5: Trạng thái gia hạn
+
+            if (trangThai === "Đã gia hạn lần 2") {
+              return; // Không cho click nếu đã gia hạn lần 2
+            }
+
             if (this.selectedRow) {
               this.selectedRow.classList.remove("selected");
             }
+
             row.classList.add("selected");
             this.selectedRow = row;
 
@@ -115,6 +122,7 @@
           });
         });
       }
+
 
       handleTruongHopChange() {
         const select = document.getElementById("truongHop");
@@ -182,32 +190,32 @@
               tb.classList.add("submit-success");
               tb.style.display = "block";
             }
-          
-          // Trigger animation restart
-          tb.classList.remove("fadeInOut");
-          void tb.offsetWidth; // reflow trick
-          tb.classList.add("fadeInOut");
 
-          // Auto-hide after 4s (matches animation)
-          setTimeout(() => {
-            tb.style.display = "none";
-          }, 4000);
+            // Trigger animation restart
+            tb.classList.remove("fadeInOut");
+            void tb.offsetWidth; // reflow trick
+            tb.classList.add("fadeInOut");
+
+            // Auto-hide after 4s (matches animation)
+            setTimeout(() => {
+              tb.style.display = "none";
+            }, 4000);
 
           } catch (error) {
-              console.error("Lỗi gửi yêu cầu:", error);
-              tb.innerHTML = `Lỗi kết nối đến máy chủ`;
-              tb.style.backgroundColor = "#f44336";
-              tb.classList.add("submit-success");
-              tb.style.display = "block";
+            console.error("Lỗi gửi yêu cầu:", error);
+            tb.innerHTML = `Lỗi kết nối đến máy chủ`;
+            tb.style.backgroundColor = "#f44336";
+            tb.classList.add("submit-success");
+            tb.style.display = "block";
 
-              tb.classList.remove("fadeInOut");
-              void tb.offsetWidth;
-              tb.classList.add("fadeInOut");
+            tb.classList.remove("fadeInOut");
+            void tb.offsetWidth;
+            tb.classList.add("fadeInOut");
 
-              setTimeout(() => {
-                tb.style.display = "none";
-              }, 4000);
-            }
+            setTimeout(() => {
+              tb.style.display = "none";
+            }, 4000);
+          }
         });
       }
 

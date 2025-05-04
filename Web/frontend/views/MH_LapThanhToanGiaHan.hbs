@@ -107,6 +107,8 @@
                 <td>${item.TRANGTHAI}</td>
               `;
               row.addEventListener("click", () => {
+                if (item.TRANGTHAI && item.TRANGTHAI.trim() !== "") return;
+
                 if (this.selectedRow) {
                   this.selectedRow.classList.remove("selected");
                 }
@@ -128,6 +130,9 @@
       handleRowSelection() {
         const rows = document.querySelectorAll(".candidates-table tbody tr");
         rows.forEach(row => {
+          const trangThai = row.cells[3].textContent.trim();
+          if (trangThai !== "") return; // Bỏ qua nếu có trạng thái
+
           row.addEventListener("click", () => {
             if (this.selectedRow) {
               this.selectedRow.classList.remove("selected");
