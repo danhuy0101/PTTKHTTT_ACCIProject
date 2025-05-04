@@ -40,11 +40,11 @@ class PhieuDuThi_Bus {
                     };
                 }
                 
-                await PhieuDuThiDAO.capNhatTrangThai(maPhieuDuThi, trangThai);
-                
-                if (trangThai === 'Đã gửi') {
+                if (currentStatus === 'Chưa gửi') {
                     await this.guiThongBaoEmail(maPhieuDuThi);
                 }
+
+                await PhieuDuThiDAO.capNhatTrangThai(maPhieuDuThi, trangThai);
                 
                 return { 
                     success: true, 
