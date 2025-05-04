@@ -17,24 +17,24 @@ function validatePhone(phone) {
 
 function validateName(name) {
     if (!name || typeof name !== 'string') return 'Tên không hợp lệ.';
-
-    // Không chứa số hoặc ký tự đặc biệt (ngoại trừ dấu tiếng Việt và dấu cách)
-    const regex = /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯĂÂÊÔƠƯa-zàáâãèéêìíòóôõùúăđĩũơưăâêôơư\s']+$/;
+  
+    // Chỉ cho phép chữ cái (mọi ngôn ngữ) và khoảng trắng
+    const regex = /^[\p{L}\s']+$/u;
     if (!regex.test(name)) return 'Tên không chứa số hoặc ký tự đặc biệt.';
-
-    // Ít nhất 2 từ
+  
     const words = name.trim().split(/\s+/);
     if (words.length < 2) return 'Tên phải có ít nhất 2 từ.';
-
-    // Không được viết in thường đầu câu
-    if (name[0] === name[0].toLowerCase()) return 'Tên phải viết hoa chữ cái đầu.';
-
-    // Kiểm tra từng từ phải viết hoa đầu tiên
+  
+    // Mỗi từ phải viết hoa chữ cái đầu
     for (let word of words) {
-        if (word[0] !== word[0].toUpperCase() || word.slice(1) !== word.slice(1).toLowerCase()) {
-            return 'Tên phải viết hoa chữ cái đầu.';
+        const firstChar = word.charAt(0);
+        const rest = word.slice(1);
+    
+        // So sánh chữ đầu là viết hoa, phần còn lại là thường (vẫn chấp nhận dấu)
+        if (firstChar !== firstChar.toLocaleUpperCase() || rest !== rest.toLocaleLowerCase()) {
+          return 'Tên phải viết hoa chữ cái đầu của mỗi từ.';
         }
     }
-
+  
     return null;
-}
+}  
