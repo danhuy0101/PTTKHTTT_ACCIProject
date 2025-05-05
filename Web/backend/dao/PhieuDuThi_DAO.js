@@ -189,9 +189,6 @@ class PhieuDuThiDAO {
                 throw new Error(`Lỗi gửi email: ${emailError.message}`);
             }
 
-            // Cập nhật trạng thái phiếu dự thi
-            // await this.capNhatTrangThai(maPhieuDuThi, 'Đã gửi');
-
             console.log(`Đã gửi email thông báo cho phiếu dự thi ${maPhieuDuThi} đến ${EMAIL}`);
 
             return { success: true, message: `Đã gửi email thông báo đến ${EMAIL}` };

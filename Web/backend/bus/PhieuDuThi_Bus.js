@@ -42,14 +42,15 @@ class PhieuDuThi_Bus {
                 
                 if (currentStatus === 'Chưa gửi') {
                     await this.guiThongBaoEmail(maPhieuDuThi);
+
+                    await PhieuDuThiDAO.capNhatTrangThai(maPhieuDuThi, trangThai);
+                
+                    return { 
+                        success: true, 
+                        message: 'Phát hành thành công!' 
+                    };
                 }
 
-                await PhieuDuThiDAO.capNhatTrangThai(maPhieuDuThi, trangThai);
-                
-                return { 
-                    success: true, 
-                    message: 'Phát hành thành công!' 
-                };
             } else {
                 return { 
                     success: false, 
